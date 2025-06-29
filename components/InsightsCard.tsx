@@ -127,6 +127,14 @@ const InsightsCard: React.FC<InsightsCardProps> = ({ onClick }) => {
             </div>
           )}
         </div>
+
+        {/* Click to View Hint */}
+        <div className="mt-6 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium group-hover:bg-primary/20 transition-colors">
+            <TrendingUp className="h-4 w-4" />
+            <span>Click to view full insights</span>
+          </div>
+        </div>
       </div>
 
       {/* Hover Effect Overlay */}

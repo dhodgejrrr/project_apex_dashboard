@@ -16,7 +16,7 @@ const Dashboard: React.FC = () => {
   const renderDashboardContent = () => {
     switch (currentView) {
       case 'overview':
-        return <OverviewDashboard />;
+        return <OverviewDashboard onViewChange={setCurrentView} />;
       case 'pace':
         return <PaceDashboard />;
       case 'strategy':
@@ -26,7 +26,7 @@ const Dashboard: React.FC = () => {
       case 'insights':
         return <InsightsDashboard />;
       default:
-        return <OverviewDashboard />;
+        return <OverviewDashboard onViewChange={setCurrentView} />;
     }
   };
 

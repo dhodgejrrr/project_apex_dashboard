@@ -1,12 +1,14 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useData } from '../contexts/DataContext';
 import { Trophy, Clock, Zap, Users, TrendingUp, Award, Target, Timer } from 'lucide-react';
 import InsightsCard from '../components/InsightsCard';
 
-const OverviewDashboard: React.FC = () => {
+interface OverviewDashboardProps {
+  onViewChange?: (view: 'insights') => void;
+}
+
+const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ onViewChange }) => {
   const { raceData, hasInsightsData, hasSocialMediaData } = useData();
-  const navigate = useNavigate();
 
   if (!raceData) return null;
 
@@ -177,7 +179,7 @@ const OverviewDashboard: React.FC = () => {
         {/* Insights Card - Takes 1 column */}
         <div className="xl:col-span-1">
           {(hasInsightsData() || hasSocialMediaData()) ? (
-            <InsightsCard onClick={() => navigate('/insights')} />
+            <InsightsCard onClick={() => onViewChange?.('insights')} />
           ) : (
             <div className="bg-card rounded-2xl shadow-lg border border-border p-8 text-center theme-transition">
               <div className="w-16 h-16 bg-muted/50 rounded-2xl flex items-center justify-center mx-auto mb-4">
