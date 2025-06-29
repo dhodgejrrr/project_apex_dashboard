@@ -217,3 +217,48 @@ export interface RaceData {
     analysis_type: string;
   };
 }
+
+// New interfaces for insights data
+export interface InsightsData {
+  executive_summary: string;
+  marketing_angles: string[];
+}
+
+// New interfaces for social media data
+export interface SocialMediaPost {
+  text: string;
+  needs_visual: boolean;
+  visual_type: string | null;
+  visual_params: Record<string, any> | null;
+  priority: 'high' | 'medium' | 'low';
+  has_visual: boolean;
+  image_url?: string;
+}
+
+export interface SocialMediaData {
+  posts: SocialMediaPost[];
+  metadata: {
+    generation_method: string;
+    attempts: number;
+    final_critique: {
+      approved: boolean;
+      feedback: string;
+    };
+    warning: string | null;
+  };
+}
+
+// Utility types for data relationships
+export interface DataRelationship {
+  type: 'car' | 'driver' | 'manufacturer' | 'team';
+  identifier: string;
+  confidence: number;
+}
+
+export interface CrossReference {
+  sourceType: 'insights' | 'social' | 'race';
+  sourceId: string;
+  targetType: 'insights' | 'social' | 'race';
+  targetId: string;
+  relationship: DataRelationship;
+}
