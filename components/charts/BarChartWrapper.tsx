@@ -10,6 +10,7 @@ interface BarChartWrapperProps {
   color?: string;
   height?: number;
   formatValue?: (value: any) => string;
+  yAxisDomain?: [number, number];
 }
 
 const BarChartWrapper: React.FC<BarChartWrapperProps> = ({
@@ -21,16 +22,19 @@ const BarChartWrapper: React.FC<BarChartWrapperProps> = ({
   color = '#ef4444',
   height = 400,
   formatValue = (value) => value?.toString() || '',
+  yAxisDomain,
 }) => {
   return (
     <div className="bg-card rounded-3xl shadow-xl border border-border overflow-hidden theme-transition">
       {/* Header */}
-      <div className="px-8 py-6 border-b border-border bg-gradient-to-r from-muted/50 to-card">
-        <h3 className="text-2xl font-black text-card-foreground tracking-tight">{title}</h3>
-        {subtitle && (
-          <p className="text-muted-foreground text-base mt-2 font-medium">{subtitle}</p>
-        )}
-      </div>
+      {title && (
+        <div className="px-8 py-6 border-b border-border bg-gradient-to-r from-muted/50 to-card">
+          <h3 className="text-2xl font-black text-card-foreground tracking-tight">{title}</h3>
+          {subtitle && (
+            <p className="text-muted-foreground text-base mt-2 font-medium">{subtitle}</p>
+          )}
+        </div>
+      )}
       
       {/* Chart */}
       <div className="p-8 bg-card">
@@ -58,6 +62,8 @@ const BarChartWrapper: React.FC<BarChartWrapperProps> = ({
               tickLine={false}
               axisLine={false}
               width={80}
+              domain={yAxisDomain || ['dataMin', 'dataMax']}
+              tickFormatter={formatValue}
             />
             <Tooltip 
               contentStyle={{
@@ -71,7 +77,7 @@ const BarChartWrapper: React.FC<BarChartWrapperProps> = ({
                 boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
                 padding: '12px 16px',
               }}
-              formatter={(value) => [formatValue(value), title]}
+              formatter={(value) => [formatValue(value), title || 'Value']}
               labelStyle={{ color: 'rgb(var(--color-muted-foreground))', fontWeight: '600' }}
             />
             <Bar 
