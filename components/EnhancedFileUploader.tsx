@@ -49,6 +49,8 @@ const EnhancedFileUploader: React.FC = () => {
     accept: { 'application/json': ['.json'] },
     multiple: false,
     disabled: isAnyLoading(),
+    noClick: false,
+    noKeyboard: false,
   });
 
   // Insights file drop zone
@@ -65,6 +67,8 @@ const EnhancedFileUploader: React.FC = () => {
     accept: { 'application/json': ['.json'] },
     multiple: false,
     disabled: isAnyLoading(),
+    noClick: false,
+    noKeyboard: false,
   });
 
   // Social media file drop zone
@@ -81,6 +85,8 @@ const EnhancedFileUploader: React.FC = () => {
     accept: { 'application/json': ['.json'] },
     multiple: false,
     disabled: isAnyLoading(),
+    noClick: false,
+    noKeyboard: false,
   });
 
   // File processing functions
@@ -268,7 +274,10 @@ const EnhancedFileUploader: React.FC = () => {
               </div>
               {!isLoading && (
                 <button
-                  onClick={onRemove}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemove();
+                  }}
                   className="p-1 hover:bg-accent rounded-lg transition-colors"
                   aria-label="Remove file"
                 >
