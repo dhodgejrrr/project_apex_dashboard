@@ -38,7 +38,7 @@ const StintChart: React.FC<StintChartProps> = ({ stint, stintNumber, carNumber, 
   };
 
   return (
-    <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+    <div className="bg-card rounded-3xl shadow-xl border border-border overflow-hidden theme-transition">
       {/* Header */}
       <div className={`p-6 bg-gradient-to-r ${getStintTypeColor()} text-white`}>
         <div className="flex items-center justify-between">
@@ -57,35 +57,35 @@ const StintChart: React.FC<StintChartProps> = ({ stint, stintNumber, carNumber, 
       </div>
 
       {/* Stint Stats */}
-      <div className="p-6 border-b border-slate-100 bg-slate-50">
+      <div className="p-6 border-b border-border bg-muted/30">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center">
             <p className="text-2xl font-black text-green-600">{stint.green_laps}</p>
-            <p className="text-sm font-bold text-slate-600">Green</p>
+            <p className="text-sm font-bold text-muted-foreground">Green</p>
           </div>
           <div className="text-center">
             <p className="text-2xl font-black text-yellow-600">{stint.yellow_laps}</p>
-            <p className="text-sm font-bold text-slate-600">Yellow</p>
+            <p className="text-sm font-bold text-muted-foreground">Yellow</p>
           </div>
           <div className="text-center">
             <p className="text-2xl font-black text-red-600">{stint.red_laps}</p>
-            <p className="text-sm font-bold text-slate-600">Red</p>
+            <p className="text-sm font-bold text-muted-foreground">Red</p>
           </div>
           <div className="text-center">
-            <p className="text-lg font-black text-slate-900 font-mono">{stint.best_green_time_formatted || 'N/A'}</p>
-            <p className="text-sm font-bold text-slate-600">Best Time</p>
+            <p className="text-lg font-black text-card-foreground font-mono">{stint.best_green_time_formatted || 'N/A'}</p>
+            <p className="text-sm font-bold text-muted-foreground">Best Time</p>
           </div>
         </div>
       </div>
 
       {/* Chart */}
-      <div className="p-6">
+      <div className="p-6 bg-card">
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" strokeOpacity={0.5} />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--color-border))" strokeOpacity={0.5} />
             <XAxis 
               dataKey="lap" 
-              stroke="#64748b"
+              stroke="rgb(var(--color-muted-foreground))"
               fontSize={12}
               fontFamily="Inter"
               fontWeight={500}
@@ -93,7 +93,7 @@ const StintChart: React.FC<StintChartProps> = ({ stint, stintNumber, carNumber, 
               axisLine={false}
             />
             <YAxis 
-              stroke="#64748b"
+              stroke="rgb(var(--color-muted-foreground))"
               fontSize={12}
               fontFamily="Inter"
               fontWeight={500}
@@ -104,10 +104,10 @@ const StintChart: React.FC<StintChartProps> = ({ stint, stintNumber, carNumber, 
             />
             <Tooltip 
               contentStyle={{
-                backgroundColor: '#1e293b',
-                border: 'none',
+                backgroundColor: 'rgb(var(--color-card))',
+                border: '1px solid rgb(var(--color-border))',
                 borderRadius: '12px',
-                color: '#fff',
+                color: 'rgb(var(--color-card-foreground))',
                 fontSize: '14px',
                 fontFamily: 'Inter',
                 fontWeight: '500',
@@ -119,7 +119,7 @@ const StintChart: React.FC<StintChartProps> = ({ stint, stintNumber, carNumber, 
                 name === 'actualTime' ? 'Actual Time' : 'Predicted Time'
               ]}
               labelFormatter={(label) => `Lap ${label} in Stint`}
-              labelStyle={{ color: '#cbd5e1', fontWeight: '600' }}
+              labelStyle={{ color: 'rgb(var(--color-muted-foreground))', fontWeight: '600' }}
             />
             <Line 
               type="monotone" 
@@ -132,11 +132,11 @@ const StintChart: React.FC<StintChartProps> = ({ stint, stintNumber, carNumber, 
             <Line 
               type="monotone" 
               dataKey="predictedTime" 
-              stroke="#64748b" 
+              stroke="rgb(var(--color-muted-foreground))" 
               strokeWidth={2}
               strokeDasharray="5 5"
               dot={false}
-              activeDot={{ r: 4, stroke: '#64748b', strokeWidth: 2 }}
+              activeDot={{ r: 4, stroke: 'rgb(var(--color-muted-foreground))', strokeWidth: 2 }}
             />
           </LineChart>
         </ResponsiveContainer>
@@ -144,11 +144,11 @@ const StintChart: React.FC<StintChartProps> = ({ stint, stintNumber, carNumber, 
         <div className="flex items-center justify-center gap-6 mt-4 text-sm font-medium">
           <div className="flex items-center gap-2">
             <div className="w-4 h-0.5 bg-red-500"></div>
-            <span className="text-slate-600">Actual Lap Times</span>
+            <span className="text-muted-foreground">Actual Lap Times</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-0.5 bg-slate-500 border-dashed border-t-2"></div>
-            <span className="text-slate-600">Tire Degradation Model</span>
+            <div className="w-4 h-0.5 bg-muted-foreground border-dashed border-t-2"></div>
+            <span className="text-muted-foreground">Tire Degradation Model</span>
           </div>
         </div>
       </div>

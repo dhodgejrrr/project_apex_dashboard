@@ -62,51 +62,51 @@ const PaceDashboard: React.FC = () => {
       </div>
 
       {/* Manufacturer Comparison Table */}
-      <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-        <div className="p-6 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">Fastest by Manufacturer</h3>
+      <div className="bg-card rounded-xl shadow-lg border border-border overflow-hidden theme-transition">
+        <div className="p-6 border-b border-border">
+          <h3 className="text-lg font-semibold text-card-foreground">Fastest by Manufacturer</h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-muted/30">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Manufacturer
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Fastest Lap
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Driver
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Car #
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Optimal Time
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-card divide-y divide-border">
               {raceData.fastest_by_manufacturer.map((manufacturer, index) => (
-                <tr key={manufacturer.manufacturer} className="hover:bg-gray-50 transition-colors">
+                <tr key={manufacturer.manufacturer} className="hover:bg-muted/30 transition-colors theme-transition">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 mr-3" />
-                      <span className="text-sm font-medium text-gray-900">{manufacturer.manufacturer}</span>
+                      <span className="text-sm font-medium text-card-foreground">{manufacturer.manufacturer}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm font-mono text-gray-900">{manufacturer.fastest_lap.time}</span>
+                    <span className="text-sm font-mono text-card-foreground">{manufacturer.fastest_lap.time}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-900">{manufacturer.fastest_lap.driver_name}</span>
+                    <span className="text-sm text-card-foreground">{manufacturer.fastest_lap.driver_name}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm font-medium text-gray-900">#{manufacturer.fastest_lap.car_number}</span>
+                    <span className="text-sm font-medium text-card-foreground">#{manufacturer.fastest_lap.car_number}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm font-mono text-gray-600">{manufacturer.optimal_lap_time}</span>
+                    <span className="text-sm font-mono text-muted-foreground">{manufacturer.optimal_lap_time}</span>
                   </td>
                 </tr>
               ))}

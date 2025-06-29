@@ -38,7 +38,7 @@ const TireDegradationChart: React.FC<TireDegradationChartProps> = ({ tireDegrada
       case 'good': return 'text-blue-600';
       case 'fair': return 'text-yellow-600';
       case 'poor': return 'text-red-600';
-      default: return 'text-slate-600';
+      default: return 'text-muted-foreground';
     }
   };
 
@@ -48,12 +48,12 @@ const TireDegradationChart: React.FC<TireDegradationChartProps> = ({ tireDegrada
       case 'good': return 'from-blue-500 to-blue-600';
       case 'fair': return 'from-yellow-500 to-yellow-600';
       case 'poor': return 'from-red-500 to-red-600';
-      default: return 'from-slate-500 to-slate-600';
+      default: return 'from-muted-foreground to-muted-foreground/80';
     }
   };
 
   return (
-    <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+    <div className="bg-card rounded-3xl shadow-xl border border-border overflow-hidden theme-transition">
       {/* Header */}
       <div className={`p-6 bg-gradient-to-r ${getQualityBg(tireDegradationModel.model_quality)} text-white`}>
         <div className="flex items-center justify-between">
@@ -75,37 +75,37 @@ const TireDegradationChart: React.FC<TireDegradationChartProps> = ({ tireDegrada
       </div>
 
       {/* Model Stats */}
-      <div className="p-6 border-b border-slate-100 bg-slate-50">
+      <div className="p-6 border-b border-border bg-muted/30">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <div className="text-center">
-            <p className="text-xl font-black text-slate-900 font-mono">
+            <p className="text-xl font-black text-card-foreground font-mono">
               {tireDegradationModel.end_of_stint_deg_rate_s_per_lap.toFixed(3)}s
             </p>
-            <p className="text-sm font-bold text-slate-600">Deg Rate/Lap</p>
+            <p className="text-sm font-bold text-muted-foreground">Deg Rate/Lap</p>
           </div>
           <div className="text-center">
-            <p className="text-xl font-black text-slate-900">
+            <p className="text-xl font-black text-card-foreground">
               {tireDegradationModel.total_clean_laps_used}
             </p>
-            <p className="text-sm font-bold text-slate-600">Clean Laps</p>
+            <p className="text-sm font-bold text-muted-foreground">Clean Laps</p>
           </div>
           <div className="text-center">
             <p className="text-xl font-black text-red-600 font-mono">
               {tireDegradationModel.predicted_final_5_laps_loss_s.toFixed(2)}s
             </p>
-            <p className="text-sm font-bold text-slate-600">5-Lap Loss</p>
+            <p className="text-sm font-bold text-muted-foreground">5-Lap Loss</p>
           </div>
         </div>
       </div>
 
       {/* Chart */}
-      <div className="p-6">
+      <div className="p-6 bg-card">
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" strokeOpacity={0.5} />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--color-border))" strokeOpacity={0.5} />
             <XAxis 
               dataKey="lap" 
-              stroke="#64748b"
+              stroke="rgb(var(--color-muted-foreground))"
               fontSize={12}
               fontFamily="Inter"
               fontWeight={500}
@@ -113,7 +113,7 @@ const TireDegradationChart: React.FC<TireDegradationChartProps> = ({ tireDegrada
               axisLine={false}
             />
             <YAxis 
-              stroke="#64748b"
+              stroke="rgb(var(--color-muted-foreground))"
               fontSize={12}
               fontFamily="Inter"
               fontWeight={500}
@@ -123,10 +123,10 @@ const TireDegradationChart: React.FC<TireDegradationChartProps> = ({ tireDegrada
             />
             <Tooltip 
               contentStyle={{
-                backgroundColor: '#1e293b',
-                border: 'none',
+                backgroundColor: 'rgb(var(--color-card))',
+                border: '1px solid rgb(var(--color-border))',
                 borderRadius: '12px',
-                color: '#fff',
+                color: 'rgb(var(--color-card-foreground))',
                 fontSize: '14px',
                 fontFamily: 'Inter',
                 fontWeight: '500',
@@ -135,7 +135,7 @@ const TireDegradationChart: React.FC<TireDegradationChartProps> = ({ tireDegrada
               }}
               formatter={(value: any) => [`+${value.toFixed(3)}s`, 'Cumulative Degradation']}
               labelFormatter={(label) => `Lap ${label}`}
-              labelStyle={{ color: '#cbd5e1', fontWeight: '600' }}
+              labelStyle={{ color: 'rgb(var(--color-muted-foreground))', fontWeight: '600' }}
             />
             <Line 
               type="monotone" 
@@ -148,11 +148,11 @@ const TireDegradationChart: React.FC<TireDegradationChartProps> = ({ tireDegrada
           </LineChart>
         </ResponsiveContainer>
         
-        <div className="mt-4 p-4 bg-slate-50 rounded-xl">
-          <p className="text-sm text-slate-600 font-medium">
+        <div className="mt-4 p-4 bg-muted/30 rounded-xl">
+          <p className="text-sm text-muted-foreground font-medium">
             <strong>Model Formula:</strong> Time = {tireDegradationModel.deg_coeff_a.toFixed(6)}x² + {tireDegradationModel.deg_coeff_b.toFixed(6)}x + {tireDegradationModel.deg_coeff_c.toFixed(3)}
           </p>
-          <p className="text-sm text-slate-600 font-medium mt-1">
+          <p className="text-sm text-muted-foreground font-medium mt-1">
             <strong>Fastest Lap Predicted At:</strong> Lap {tireDegradationModel.fastest_lap_of_stint_predicted_at.toFixed(1)}
           </p>
         </div>

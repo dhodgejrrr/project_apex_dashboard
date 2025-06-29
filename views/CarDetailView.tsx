@@ -13,12 +13,12 @@ const CarDetailView: React.FC = () => {
 
   if (!raceData || !carNumber) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center theme-transition">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-slate-900 mb-4">Car data not found</h2>
+          <h2 className="text-2xl font-bold text-card-foreground mb-4">Car data not found</h2>
           <button
             onClick={() => navigate('/')}
-            className="px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-colors"
+            className="px-6 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:bg-primary/90 transition-colors"
           >
             Return to Dashboard
           </button>
@@ -34,12 +34,12 @@ const CarDetailView: React.FC = () => {
 
   if (!carStrategy || !carAnalysis || !carFastest) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center theme-transition">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-slate-900 mb-4">Car #{carNumber} data not found</h2>
+          <h2 className="text-2xl font-bold text-card-foreground mb-4">Car #{carNumber} data not found</h2>
           <button
             onClick={() => navigate('/')}
-            className="px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-colors"
+            className="px-6 py-3 bg-primary text-primary-foreground rounded-xl font-semibold hover:bg-primary/90 transition-colors"
           >
             Return to Dashboard
           </button>
@@ -66,14 +66,14 @@ const CarDetailView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background theme-transition">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-10">
+      <div className="bg-card border-b border-border sticky top-0 z-10 theme-transition">
         <div className="max-w-7xl mx-auto px-8 py-6">
           <div className="flex items-center gap-6">
             <button
               onClick={() => navigate('/')}
-              className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all duration-200"
+              className="flex items-center gap-2 px-4 py-2 text-muted-foreground hover:text-card-foreground hover:bg-accent rounded-xl transition-all duration-200"
             >
               <ArrowLeft className="h-5 w-5" />
               <span className="font-semibold">Back to Dashboard</span>
@@ -89,11 +89,11 @@ const CarDetailView: React.FC = () => {
                 </div>
               </div>
               <div>
-                <h1 className="text-3xl font-black text-slate-900 tracking-tight">Car #{carNumber} Analysis</h1>
+                <h1 className="text-3xl font-black text-card-foreground tracking-tight">Car #{carNumber} Analysis</h1>
                 <div className="flex items-center gap-4 mt-1">
-                  <span className="text-lg font-bold text-slate-700">{carAnalysis.team}</span>
-                  <span className="text-slate-500">•</span>
-                  <span className="text-lg font-semibold text-slate-600">{carAnalysis.manufacturer}</span>
+                  <span className="text-lg font-bold text-card-foreground">{carAnalysis.team}</span>
+                  <span className="text-muted-foreground">•</span>
+                  <span className="text-lg font-semibold text-muted-foreground">{carAnalysis.manufacturer}</span>
                 </div>
               </div>
             </div>
@@ -107,36 +107,36 @@ const CarDetailView: React.FC = () => {
 
         {/* Key Metrics Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200">
+          <div className="bg-card rounded-2xl p-6 shadow-lg border border-border theme-transition">
             <div className="flex items-center gap-3 mb-3">
               <Clock className="h-5 w-5 text-blue-500" />
-              <span className="text-sm font-bold text-slate-600 uppercase tracking-wider">Avg Green Pace</span>
+              <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Avg Green Pace</span>
             </div>
-            <p className="text-2xl font-black text-slate-900 font-mono">{carAnalysis.avg_green_pace_fuel_corrected}</p>
+            <p className="text-2xl font-black text-card-foreground font-mono">{carAnalysis.avg_green_pace_fuel_corrected}</p>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200">
+          <div className="bg-card rounded-2xl p-6 shadow-lg border border-border theme-transition">
             <div className="flex items-center gap-3 mb-3">
               <TrendingUp className="h-5 w-5 text-green-500" />
-              <span className="text-sm font-bold text-slate-600 uppercase tracking-wider">Consistency</span>
+              <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Consistency</span>
             </div>
-            <p className="text-2xl font-black text-slate-900 font-mono">{carAnalysis.race_pace_consistency_stdev.toFixed(3)}s</p>
+            <p className="text-2xl font-black text-card-foreground font-mono">{carAnalysis.race_pace_consistency_stdev.toFixed(3)}s</p>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200">
+          <div className="bg-card rounded-2xl p-6 shadow-lg border border-border theme-transition">
             <div className="flex items-center gap-3 mb-3">
               <Zap className="h-5 w-5 text-yellow-500" />
-              <span className="text-sm font-bold text-slate-600 uppercase tracking-wider">Avg Pit Time</span>
+              <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Avg Pit Time</span>
             </div>
-            <p className="text-2xl font-black text-slate-900 font-mono">{carAnalysis.avg_pit_stationary_time}</p>
+            <p className="text-2xl font-black text-card-foreground font-mono">{carAnalysis.avg_pit_stationary_time}</p>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200">
+          <div className="bg-card rounded-2xl p-6 shadow-lg border border-border theme-transition">
             <div className="flex items-center gap-3 mb-3">
               <Timer className="h-5 w-5 text-red-500" />
-              <span className="text-sm font-bold text-slate-600 uppercase tracking-wider">Tire Deg Rate</span>
+              <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Tire Deg Rate</span>
             </div>
-            <p className="text-2xl font-black text-slate-900 font-mono">
+            <p className="text-2xl font-black text-card-foreground font-mono">
               {carAnalysis.tire_degradation_model.end_of_stint_deg_rate_s_per_lap.toFixed(3)}s/lap
             </p>
           </div>
@@ -174,75 +174,75 @@ const CarDetailView: React.FC = () => {
         </div>
 
         {/* Detailed Stats */}
-        <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
-          <div className="p-8 border-b border-slate-100">
-            <h3 className="text-2xl font-black text-slate-900 tracking-tight">Race Summary</h3>
-            <p className="text-slate-600 text-base mt-2 font-medium">Complete race statistics and performance data</p>
+        <div className="bg-card rounded-3xl shadow-xl border border-border overflow-hidden theme-transition">
+          <div className="p-8 border-b border-border">
+            <h3 className="text-2xl font-black text-card-foreground tracking-tight">Race Summary</h3>
+            <p className="text-muted-foreground text-base mt-2 font-medium">Complete race statistics and performance data</p>
           </div>
           
           <div className="p-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <div className="space-y-4">
-                <h4 className="text-lg font-bold text-slate-900">Lap Times</h4>
+                <h4 className="text-lg font-bold text-card-foreground">Lap Times</h4>
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-slate-600 font-medium">Fastest Lap:</span>
-                    <span className="font-mono font-bold text-slate-900">{carFastest.fastest_lap.time}</span>
+                    <span className="text-muted-foreground font-medium">Fastest Lap:</span>
+                    <span className="font-mono font-bold text-card-foreground">{carFastest.fastest_lap.time}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-600 font-medium">Optimal Lap:</span>
-                    <span className="font-mono font-bold text-slate-900">{carFastest.optimal_lap_time}</span>
+                    <span className="text-muted-foreground font-medium">Optimal Lap:</span>
+                    <span className="font-mono font-bold text-card-foreground">{carFastest.optimal_lap_time}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-600 font-medium">Best S1:</span>
-                    <span className="font-mono font-bold text-slate-900">{carFastest.best_s1.time}</span>
+                    <span className="text-muted-foreground font-medium">Best S1:</span>
+                    <span className="font-mono font-bold text-card-foreground">{carFastest.best_s1.time}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-600 font-medium">Best S2:</span>
-                    <span className="font-mono font-bold text-slate-900">{carFastest.best_s2.time}</span>
+                    <span className="text-muted-foreground font-medium">Best S2:</span>
+                    <span className="font-mono font-bold text-card-foreground">{carFastest.best_s2.time}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-600 font-medium">Best S3:</span>
-                    <span className="font-mono font-bold text-slate-900">{carFastest.best_s3.time}</span>
+                    <span className="text-muted-foreground font-medium">Best S3:</span>
+                    <span className="font-mono font-bold text-card-foreground">{carFastest.best_s3.time}</span>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <h4 className="text-lg font-bold text-slate-900">Pit Strategy</h4>
+                <h4 className="text-lg font-bold text-card-foreground">Pit Strategy</h4>
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-slate-600 font-medium">Total Pit Stops:</span>
-                    <span className="font-bold text-slate-900">{carStrategy.total_pit_stops}</span>
+                    <span className="text-muted-foreground font-medium">Total Pit Stops:</span>
+                    <span className="font-bold text-card-foreground">{carStrategy.total_pit_stops}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-600 font-medium">Total Pit Time:</span>
-                    <span className="font-mono font-bold text-slate-900">{carStrategy.total_pit_time}</span>
+                    <span className="text-muted-foreground font-medium">Total Pit Time:</span>
+                    <span className="font-mono font-bold text-card-foreground">{carStrategy.total_pit_time}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-600 font-medium">Average Pit Time:</span>
-                    <span className="font-mono font-bold text-slate-900">{carStrategy.average_pit_time}</span>
+                    <span className="text-muted-foreground font-medium">Average Pit Time:</span>
+                    <span className="font-mono font-bold text-card-foreground">{carStrategy.average_pit_time}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-600 font-medium">Driver Changes:</span>
-                    <span className="font-bold text-slate-900">{carStrategy.total_driver_changes}</span>
+                    <span className="text-muted-foreground font-medium">Driver Changes:</span>
+                    <span className="font-bold text-card-foreground">{carStrategy.total_driver_changes}</span>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <h4 className="text-lg font-bold text-slate-900">Tire Model</h4>
+                <h4 className="text-lg font-bold text-card-foreground">Tire Model</h4>
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-slate-600 font-medium">Model Quality:</span>
+                    <span className="text-muted-foreground font-medium">Model Quality:</span>
                     <span className="font-bold text-green-600">{carAnalysis.tire_degradation_model.model_quality}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-600 font-medium">Clean Laps Used:</span>
-                    <span className="font-bold text-slate-900">{carAnalysis.tire_degradation_model.total_clean_laps_used}</span>
+                    <span className="text-muted-foreground font-medium">Clean Laps Used:</span>
+                    <span className="font-bold text-card-foreground">{carAnalysis.tire_degradation_model.total_clean_laps_used}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-600 font-medium">Predicted Loss (5 laps):</span>
+                    <span className="text-muted-foreground font-medium">Predicted Loss (5 laps):</span>
                     <span className="font-mono font-bold text-red-600">{carAnalysis.tire_degradation_model.predicted_final_5_laps_loss_s.toFixed(2)}s</span>
                   </div>
                 </div>

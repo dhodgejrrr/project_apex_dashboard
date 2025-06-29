@@ -68,53 +68,53 @@ const DriverDashboard: React.FC = () => {
       </div>
 
       {/* Driver Performance Table */}
-      <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
-        <div className="p-8 border-b border-slate-100">
-          <h3 className="text-2xl font-black text-slate-900 tracking-tight">Driver Delta Analysis</h3>
-          <p className="text-slate-600 text-base mt-2 font-medium">Performance gaps between teammates</p>
+      <div className="bg-card rounded-3xl shadow-xl border border-border overflow-hidden theme-transition">
+        <div className="p-8 border-b border-border">
+          <h3 className="text-2xl font-black text-card-foreground tracking-tight">Driver Delta Analysis</h3>
+          <p className="text-muted-foreground text-base mt-2 font-medium">Performance gaps between teammates</p>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-slate-50">
+            <thead className="bg-muted/30">
               <tr>
-                <th className="px-8 py-4 text-left text-sm font-bold text-slate-700 uppercase tracking-wider">
+                <th className="px-8 py-4 text-left text-sm font-bold text-muted-foreground uppercase tracking-wider">
                   Car #
                 </th>
-                <th className="px-8 py-4 text-left text-sm font-bold text-slate-700 uppercase tracking-wider">
+                <th className="px-8 py-4 text-left text-sm font-bold text-muted-foreground uppercase tracking-wider">
                   Fastest Driver
                 </th>
-                <th className="px-8 py-4 text-left text-sm font-bold text-slate-700 uppercase tracking-wider">
+                <th className="px-8 py-4 text-left text-sm font-bold text-muted-foreground uppercase tracking-wider">
                   Slower Driver
                 </th>
-                <th className="px-8 py-4 text-left text-sm font-bold text-slate-700 uppercase tracking-wider">
+                <th className="px-8 py-4 text-left text-sm font-bold text-muted-foreground uppercase tracking-wider">
                   Lap Time Gap
                 </th>
-                <th className="px-8 py-4 text-left text-sm font-bold text-slate-700 uppercase tracking-wider">
+                <th className="px-8 py-4 text-left text-sm font-bold text-muted-foreground uppercase tracking-wider">
                   S1 Gap
                 </th>
-                <th className="px-8 py-4 text-left text-sm font-bold text-slate-700 uppercase tracking-wider">
+                <th className="px-8 py-4 text-left text-sm font-bold text-muted-foreground uppercase tracking-wider">
                   S2 Gap
                 </th>
-                <th className="px-8 py-4 text-left text-sm font-bold text-slate-700 uppercase tracking-wider">
+                <th className="px-8 py-4 text-left text-sm font-bold text-muted-foreground uppercase tracking-wider">
                   S3 Gap
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-slate-200">
+            <tbody className="bg-card divide-y divide-border">
               {raceData.driver_deltas_by_car.slice(0, 15).map((car) => {
                 const delta = car.deltas_to_fastest[0];
                 if (!delta) return null;
                 
                 return (
-                  <tr key={car.car_number} className="hover:bg-slate-50 transition-colors">
+                  <tr key={car.car_number} className="hover:bg-muted/30 transition-colors theme-transition">
                     <td className="px-8 py-4 whitespace-nowrap">
-                      <span className="text-base font-bold text-slate-900">#{car.car_number}</span>
+                      <span className="text-base font-bold text-card-foreground">#{car.car_number}</span>
                     </td>
                     <td className="px-8 py-4 whitespace-nowrap">
-                      <span className="text-base text-slate-900 font-medium">{car.fastest_driver_name}</span>
+                      <span className="text-base text-card-foreground font-medium">{car.fastest_driver_name}</span>
                     </td>
                     <td className="px-8 py-4 whitespace-nowrap">
-                      <span className="text-base text-slate-900 font-medium">{delta.driver_name}</span>
+                      <span className="text-base text-card-foreground font-medium">{delta.driver_name}</span>
                     </td>
                     <td className="px-8 py-4 whitespace-nowrap">
                       <span className="text-base font-mono font-bold text-red-600">+{delta.lap_time_delta}s</span>

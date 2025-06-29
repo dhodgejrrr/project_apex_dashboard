@@ -23,23 +23,23 @@ const GroupedBarChartWrapper: React.FC<GroupedBarChartWrapperProps> = ({
   formatValue = (value) => value?.toString() || '',
 }) => {
   return (
-    <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+    <div className="bg-card rounded-3xl shadow-xl border border-border overflow-hidden theme-transition">
       {/* Header */}
-      <div className="px-8 py-6 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white">
-        <h3 className="text-2xl font-black text-slate-900 tracking-tight">{title}</h3>
+      <div className="px-8 py-6 border-b border-border bg-gradient-to-r from-muted/50 to-card">
+        <h3 className="text-2xl font-black text-card-foreground tracking-tight">{title}</h3>
         {subtitle && (
-          <p className="text-slate-600 text-base mt-2 font-medium">{subtitle}</p>
+          <p className="text-muted-foreground text-base mt-2 font-medium">{subtitle}</p>
         )}
       </div>
       
       {/* Chart */}
-      <div className="p-8">
+      <div className="p-8 bg-card">
         <ResponsiveContainer width="100%" height={height}>
           <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" strokeOpacity={0.5} />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgb(var(--color-border))" strokeOpacity={0.5} />
             <XAxis 
               dataKey={xAxisKey} 
-              stroke="#64748b"
+              stroke="rgb(var(--color-muted-foreground))"
               fontSize={14}
               fontFamily="Inter"
               fontWeight={500}
@@ -51,7 +51,7 @@ const GroupedBarChartWrapper: React.FC<GroupedBarChartWrapperProps> = ({
               interval={0}
             />
             <YAxis 
-              stroke="#64748b"
+              stroke="rgb(var(--color-muted-foreground))"
               fontSize={14}
               fontFamily="Inter"
               fontWeight={500}
@@ -61,10 +61,10 @@ const GroupedBarChartWrapper: React.FC<GroupedBarChartWrapperProps> = ({
             />
             <Tooltip 
               contentStyle={{
-                backgroundColor: '#1e293b',
-                border: 'none',
+                backgroundColor: 'rgb(var(--color-card))',
+                border: '1px solid rgb(var(--color-border))',
                 borderRadius: '16px',
-                color: '#fff',
+                color: 'rgb(var(--color-card-foreground))',
                 fontSize: '14px',
                 fontFamily: 'Inter',
                 fontWeight: '500',
@@ -72,14 +72,15 @@ const GroupedBarChartWrapper: React.FC<GroupedBarChartWrapperProps> = ({
                 padding: '12px 16px',
               }}
               formatter={(value, name) => [formatValue(value), name]}
-              labelStyle={{ color: '#cbd5e1', fontWeight: '600' }}
+              labelStyle={{ color: 'rgb(var(--color-muted-foreground))', fontWeight: '600' }}
             />
             <Legend 
               wrapperStyle={{ 
                 paddingTop: '24px',
                 fontFamily: 'Inter',
                 fontSize: '14px',
-                fontWeight: '500'
+                fontWeight: '500',
+                color: 'rgb(var(--color-card-foreground))'
               }}
             />
             {dataKeys.map((key, index) => (
