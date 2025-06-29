@@ -210,109 +210,6 @@ const EnhancedFileUploader: React.FC = () => {
     setFiles(prev => ({ ...prev, [fileType]: null }));
   };
 
-  // File upload card component
-  const FileUploadCard: React.FC<{
-    title: string;
-    description: string;
-    icon: React.ComponentType<any>;
-    file: File | null;
-    onRemove: () => void;
-    getRootProps: any;
-    getInputProps: any;
-    isDragActive: boolean;
-    isRequired?: boolean;
-    isLoading?: boolean;
-    color: string;
-  }> = ({ 
-    title, 
-    description, 
-    icon: Icon, 
-    file, 
-    onRemove, 
-    getRootProps, 
-    getInputProps, 
-    isDragActive, 
-    isRequired = false,
-    isLoading = false,
-    color 
-  }) => (
-    <div className="bg-card rounded-2xl border border-border overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 theme-transition">
-      <div className={`h-2 bg-gradient-to-r ${color}`} />
-      
-      <div className="p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center`}>
-            <Icon className="h-5 w-5 text-white" />
-          </div>
-          <div>
-            <h3 className="text-lg font-bold text-card-foreground">{title}</h3>
-            {isRequired && (
-              <span className="text-xs text-error font-medium">Required</span>
-            )}
-          </div>
-        </div>
-
-        <p className="text-muted-foreground text-sm mb-4">{description}</p>
-
-        {file ? (
-          <div className="bg-muted rounded-xl p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 text-success" />
-                <div>
-                  <p className="text-sm font-medium text-card-foreground">{file.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {(file.size / 1024).toFixed(1)} KB
-                  </p>
-                </div>
-              </div>
-              {!isLoading && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onRemove();
-                  }}
-                  className="p-1 hover:bg-accent rounded-lg transition-colors"
-                  aria-label="Remove file"
-                >
-                  <X className="h-4 w-4 text-muted-foreground" />
-                </button>
-              )}
-            </div>
-            
-            {isLoading && (
-              <div className="mt-3">
-                <div className="w-full bg-muted-foreground/20 rounded-full h-2">
-                  <div className="bg-primary h-2 rounded-full animate-pulse" style={{ width: '60%' }} />
-                </div>
-                <p className="text-xs text-muted-foreground mt-1">Processing...</p>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div
-            {...getRootProps()}
-            className={`
-              border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all duration-300
-              ${isDragActive
-                ? 'border-primary bg-primary/5 scale-[1.02]'
-                : 'border-border hover:border-primary/50 hover:bg-accent/50'
-              }
-              ${isAnyLoading() ? 'opacity-50 cursor-not-allowed' : ''}
-            `}
-          >
-            <input {...getInputProps()} />
-            <Upload className={`h-8 w-8 mx-auto mb-3 ${isDragActive ? 'text-primary' : 'text-muted-foreground'}`} />
-            <p className="text-sm font-medium text-card-foreground mb-1">
-              {isDragActive ? 'Drop file here' : 'Click to browse or drag & drop'}
-            </p>
-            <p className="text-xs text-muted-foreground">JSON files only</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
   return (
     <div className="w-full max-w-6xl mx-auto space-y-8">
       {/* Header */}
@@ -328,45 +225,234 @@ const EnhancedFileUploader: React.FC = () => {
 
       {/* File Upload Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <FileUploadCard
-          title="Race Analysis"
-          description="Main comprehensive race analysis data with lap times, strategies, and performance metrics."
-          icon={Database}
-          file={files.raceFile}
-          onRemove={() => removeFile('raceFile')}
-          getRootProps={getRaceRootProps}
-          getInputProps={getRaceInputProps}
-          isDragActive={isRaceDragActive}
-          isRequired={true}
-          isLoading={uploadProgress.race}
-          color="from-primary to-primary/80"
-        />
+        {/* Race Analysis Upload */}
+        <div className="bg-card rounded-2xl border border-border overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 theme-transition">
+          <div className="h-2 bg-gradient-to-r from-primary to-primary/80" />
+          
+          <div className="p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
+                <Database className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-card-foreground">Race Analysis</h3>
+                <span className="text-xs text-error font-medium">Required</span>
+              </div>
+            </div>
 
-        <FileUploadCard
-          title="Race Insights"
-          description="Executive summary and marketing insights derived from the race analysis."
-          icon={TrendingUp}
-          file={files.insightsFile}
-          onRemove={() => removeFile('insightsFile')}
-          getRootProps={getInsightsRootProps}
-          getInputProps={getInsightsInputProps}
-          isDragActive={isInsightsDragActive}
-          isLoading={uploadProgress.insights}
-          color="from-info to-info/80"
-        />
+            <p className="text-muted-foreground text-sm mb-4">
+              Main comprehensive race analysis data with lap times, strategies, and performance metrics.
+            </p>
 
-        <FileUploadCard
-          title="Social Media"
-          description="Generated social media content and posts based on race highlights and performance."
-          icon={MessageSquare}
-          file={files.socialFile}
-          onRemove={() => removeFile('socialFile')}
-          getRootProps={getSocialRootProps}
-          getInputProps={getSocialInputProps}
-          isDragActive={isSocialDragActive}
-          isLoading={uploadProgress.social}
-          color="from-success to-success/80"
-        />
+            {files.raceFile ? (
+              <div className="bg-muted rounded-xl p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-success" />
+                    <div>
+                      <p className="text-sm font-medium text-card-foreground">{files.raceFile.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {(files.raceFile.size / 1024).toFixed(1)} KB
+                      </p>
+                    </div>
+                  </div>
+                  {!uploadProgress.race && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFile('raceFile');
+                      }}
+                      className="p-1 hover:bg-accent rounded-lg transition-colors"
+                      aria-label="Remove file"
+                    >
+                      <X className="h-4 w-4 text-muted-foreground" />
+                    </button>
+                  )}
+                </div>
+                
+                {uploadProgress.race && (
+                  <div className="mt-3">
+                    <div className="w-full bg-muted-foreground/20 rounded-full h-2">
+                      <div className="bg-primary h-2 rounded-full animate-pulse" style={{ width: '60%' }} />
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">Processing...</p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div
+                {...getRaceRootProps()}
+                className={`
+                  border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all duration-300
+                  ${isRaceDragActive
+                    ? 'border-primary bg-primary/5 scale-[1.02]'
+                    : 'border-border hover:border-primary/50 hover:bg-accent/50'
+                  }
+                  ${isAnyLoading() ? 'opacity-50 cursor-not-allowed' : ''}
+                `}
+              >
+                <input {...getRaceInputProps()} />
+                <Upload className={`h-8 w-8 mx-auto mb-3 ${isRaceDragActive ? 'text-primary' : 'text-muted-foreground'}`} />
+                <p className="text-sm font-medium text-card-foreground mb-1">
+                  {isRaceDragActive ? 'Drop file here' : 'Click to browse or drag & drop'}
+                </p>
+                <p className="text-xs text-muted-foreground">JSON files only</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Insights Upload */}
+        <div className="bg-card rounded-2xl border border-border overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 theme-transition">
+          <div className="h-2 bg-gradient-to-r from-info to-info/80" />
+          
+          <div className="p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-info to-info/80 flex items-center justify-center">
+                <TrendingUp className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-card-foreground">Race Insights</h3>
+              </div>
+            </div>
+
+            <p className="text-muted-foreground text-sm mb-4">
+              Executive summary and marketing insights derived from the race analysis.
+            </p>
+
+            {files.insightsFile ? (
+              <div className="bg-muted rounded-xl p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-success" />
+                    <div>
+                      <p className="text-sm font-medium text-card-foreground">{files.insightsFile.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {(files.insightsFile.size / 1024).toFixed(1)} KB
+                      </p>
+                    </div>
+                  </div>
+                  {!uploadProgress.insights && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFile('insightsFile');
+                      }}
+                      className="p-1 hover:bg-accent rounded-lg transition-colors"
+                      aria-label="Remove file"
+                    >
+                      <X className="h-4 w-4 text-muted-foreground" />
+                    </button>
+                  )}
+                </div>
+                
+                {uploadProgress.insights && (
+                  <div className="mt-3">
+                    <div className="w-full bg-muted-foreground/20 rounded-full h-2">
+                      <div className="bg-primary h-2 rounded-full animate-pulse" style={{ width: '60%' }} />
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">Processing...</p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div
+                {...getInsightsRootProps()}
+                className={`
+                  border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all duration-300
+                  ${isInsightsDragActive
+                    ? 'border-primary bg-primary/5 scale-[1.02]'
+                    : 'border-border hover:border-primary/50 hover:bg-accent/50'
+                  }
+                  ${isAnyLoading() ? 'opacity-50 cursor-not-allowed' : ''}
+                `}
+              >
+                <input {...getInsightsInputProps()} />
+                <Upload className={`h-8 w-8 mx-auto mb-3 ${isInsightsDragActive ? 'text-primary' : 'text-muted-foreground'}`} />
+                <p className="text-sm font-medium text-card-foreground mb-1">
+                  {isInsightsDragActive ? 'Drop file here' : 'Click to browse or drag & drop'}
+                </p>
+                <p className="text-xs text-muted-foreground">JSON files only</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Social Media Upload */}
+        <div className="bg-card rounded-2xl border border-border overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 theme-transition">
+          <div className="h-2 bg-gradient-to-r from-success to-success/80" />
+          
+          <div className="p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-success to-success/80 flex items-center justify-center">
+                <MessageSquare className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-card-foreground">Social Media</h3>
+              </div>
+            </div>
+
+            <p className="text-muted-foreground text-sm mb-4">
+              Generated social media content and posts based on race highlights and performance.
+            </p>
+
+            {files.socialFile ? (
+              <div className="bg-muted rounded-xl p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-success" />
+                    <div>
+                      <p className="text-sm font-medium text-card-foreground">{files.socialFile.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {(files.socialFile.size / 1024).toFixed(1)} KB
+                      </p>
+                    </div>
+                  </div>
+                  {!uploadProgress.social && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFile('socialFile');
+                      }}
+                      className="p-1 hover:bg-accent rounded-lg transition-colors"
+                      aria-label="Remove file"
+                    >
+                      <X className="h-4 w-4 text-muted-foreground" />
+                    </button>
+                  )}
+                </div>
+                
+                {uploadProgress.social && (
+                  <div className="mt-3">
+                    <div className="w-full bg-muted-foreground/20 rounded-full h-2">
+                      <div className="bg-primary h-2 rounded-full animate-pulse" style={{ width: '60%' }} />
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">Processing...</p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div
+                {...getSocialRootProps()}
+                className={`
+                  border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all duration-300
+                  ${isSocialDragActive
+                    ? 'border-primary bg-primary/5 scale-[1.02]'
+                    : 'border-border hover:border-primary/50 hover:bg-accent/50'
+                  }
+                  ${isAnyLoading() ? 'opacity-50 cursor-not-allowed' : ''}
+                `}
+              >
+                <input {...getSocialInputProps()} />
+                <Upload className={`h-8 w-8 mx-auto mb-3 ${isSocialDragActive ? 'text-primary' : 'text-muted-foreground'}`} />
+                <p className="text-sm font-medium text-card-foreground mb-1">
+                  {isSocialDragActive ? 'Drop file here' : 'Click to browse or drag & drop'}
+                </p>
+                <p className="text-xs text-muted-foreground">JSON files only</p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Error Display */}
