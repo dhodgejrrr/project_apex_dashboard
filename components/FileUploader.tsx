@@ -57,10 +57,10 @@ const FileUploader: React.FC = () => {
       <div
         {...getRootProps()}
         className={`
-          relative border-2 border-dashed rounded-3xl p-20 text-center cursor-pointer transition-all duration-300 ease-out
+          relative border-2 border-dashed rounded-3xl p-20 text-center cursor-pointer transition-all duration-300 ease-out theme-transition
           ${isDragActive
-            ? 'border-red-400 bg-red-50 scale-[1.02] shadow-2xl'
-            : 'border-slate-300 hover:border-slate-400 hover:bg-slate-50 hover:shadow-xl'
+            ? 'border-primary bg-primary/5 scale-[1.02] shadow-2xl'
+            : 'border-border hover:border-primary/50 hover:bg-accent/50 hover:shadow-xl'
           }
           ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
         `}
@@ -70,26 +70,26 @@ const FileUploader: React.FC = () => {
         <div className="flex flex-col items-center gap-8">
           {isLoading ? (
             <div className="relative">
-              <div className="animate-spin rounded-full h-24 w-24 border-4 border-red-200 border-t-red-600"></div>
-              <Database className="absolute inset-0 m-auto h-10 w-10 text-red-600" />
+              <div className="animate-spin rounded-full h-24 w-24 border-4 border-primary/20 border-t-primary"></div>
+              <Database className="absolute inset-0 m-auto h-10 w-10 text-primary" />
             </div>
           ) : (
             <div className="relative">
               <div className={`w-24 h-24 rounded-2xl flex items-center justify-center transition-all duration-300 ${
                 isDragActive 
-                  ? 'bg-red-100 text-red-600 scale-110' 
-                  : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200'
+                  ? 'bg-primary/20 text-primary scale-110' 
+                  : 'bg-muted text-muted-foreground group-hover:bg-muted/70'
               }`}>
                 <Upload className="h-12 w-12" />
               </div>
               {isDragActive && (
-                <div className="absolute -inset-2 bg-red-400 rounded-2xl opacity-20 animate-pulse" />
+                <div className="absolute -inset-2 bg-primary/20 rounded-2xl opacity-20 animate-pulse" />
               )}
             </div>
           )}
           
           <div className="space-y-4">
-            <h3 className="text-3xl font-black text-slate-900 tracking-tight">
+            <h3 className="text-3xl font-black text-card-foreground tracking-tight">
               {isLoading
                 ? 'Processing race data...'
                 : isDragActive
@@ -97,7 +97,7 @@ const FileUploader: React.FC = () => {
                 : 'Upload Race Analysis JSON'
               }
             </h3>
-            <p className="text-slate-600 text-xl max-w-md mx-auto font-medium">
+            <p className="text-muted-foreground text-xl max-w-md mx-auto font-medium">
               {!isLoading && (
                 isDragActive
                   ? 'Release to upload and begin analysis'
@@ -107,18 +107,18 @@ const FileUploader: React.FC = () => {
             
             {!isLoading && !isDragActive && (
               <div className="flex items-center justify-center gap-6 pt-6">
-                <div className="flex items-center gap-2 text-sm text-slate-500 font-medium">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
+                <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+                  <CheckCircle className="h-5 w-5 text-success" />
                   <span>JSON format</span>
                 </div>
-                <div className="w-1 h-1 bg-slate-300 rounded-full" />
-                <div className="flex items-center gap-2 text-sm text-slate-500 font-medium">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
+                <div className="w-1 h-1 bg-border rounded-full" />
+                <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+                  <CheckCircle className="h-5 w-5 text-success" />
                   <span>Instant analysis</span>
                 </div>
-                <div className="w-1 h-1 bg-slate-300 rounded-full" />
-                <div className="flex items-center gap-2 text-sm text-slate-500 font-medium">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
+                <div className="w-1 h-1 bg-border rounded-full" />
+                <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+                  <CheckCircle className="h-5 w-5 text-success" />
                   <span>Professional insights</span>
                 </div>
               </div>
@@ -128,14 +128,14 @@ const FileUploader: React.FC = () => {
       </div>
 
       {error && (
-        <div className="mt-8 p-8 bg-red-50 border-2 border-red-200 rounded-2xl">
+        <div className="mt-8 p-8 bg-error/10 border-2 border-error/20 rounded-2xl theme-transition">
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
-              <FileX className="h-6 w-6 text-red-600" />
+            <div className="w-12 h-12 bg-error/20 rounded-xl flex items-center justify-center flex-shrink-0">
+              <FileX className="h-6 w-6 text-error" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-red-800">Upload Error</h3>
-              <p className="text-red-700 mt-1 font-medium">{error}</p>
+              <h3 className="text-lg font-bold text-error">Upload Error</h3>
+              <p className="text-error/80 mt-1 font-medium">{error}</p>
             </div>
           </div>
         </div>

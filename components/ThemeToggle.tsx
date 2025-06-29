@@ -11,9 +11,9 @@ const ThemeToggle: React.FC = () => {
       className="
         relative inline-flex items-center justify-center w-12 h-12 
         bg-card hover:bg-accent rounded-xl border border-border
-        transition-all duration-300 ease-out
+        transition-all duration-300 ease-out theme-transition
         hover:scale-105 hover:shadow-lg
-        focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2
+        focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background
         group
       "
       aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
