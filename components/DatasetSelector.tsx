@@ -32,8 +32,7 @@ const DatasetSelector: React.FC = () => {
 
   const scanDatasets = async () => {
     try {
-      // In a real implementation, this would scan the file system
-      // For now, we'll check for known datasets
+      // Check for known datasets in the public directory
       const knownDatasets = ['impc_watkins_2025'];
       const foundDatasets: Dataset[] = [];
 
