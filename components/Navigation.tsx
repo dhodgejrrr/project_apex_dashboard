@@ -1,5 +1,6 @@
 import React from 'react';
 import { BarChart3, Zap, Users, Trophy, TrendingUp } from 'lucide-react';
+import ThemeToggle from './ThemeToggle';
 
 export type DashboardView = 'overview' | 'pace' | 'strategy' | 'driver';
 
@@ -17,17 +18,20 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
   ];
 
   return (
-    <nav className="bg-slate-900 border-r border-slate-800 min-h-screen w-80 flex flex-col shadow-2xl">
+    <nav className="bg-card border-r border-border min-h-screen w-80 flex flex-col shadow-2xl theme-transition">
       {/* Header */}
-      <div className="p-8 border-b border-slate-800">
-        <div className="flex items-center gap-4 mb-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
-            <TrendingUp className="h-7 w-7 text-white" />
+      <div className="p-8 border-b border-border">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg">
+              <TrendingUp className="h-7 w-7 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-black text-card-foreground tracking-tight">Race Analytics</h1>
+              <p className="text-muted-foreground text-sm font-medium">Professional Telemetry</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-black text-white tracking-tight">Race Analytics</h1>
-            <p className="text-slate-400 text-sm font-medium">Professional Telemetry</p>
-          </div>
+          <ThemeToggle />
         </div>
       </div>
       
@@ -43,10 +47,10 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
                 key={item.id}
                 onClick={() => onViewChange(item.id)}
                 className={`
-                  w-full group relative overflow-hidden rounded-xl p-5 text-left transition-all duration-300 ease-out
+                  w-full group relative overflow-hidden rounded-xl p-5 text-left transition-all duration-300 ease-out theme-transition
                   ${isActive 
-                    ? 'bg-gradient-to-r from-red-600 to-red-700 text-white shadow-xl transform scale-[1.02]' 
-                    : 'text-slate-300 hover:text-white hover:bg-slate-800/70 hover:transform hover:scale-[1.01]'
+                    ? 'bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-xl transform scale-[1.02]' 
+                    : 'text-muted-foreground hover:text-card-foreground hover:bg-accent hover:transform hover:scale-[1.01]'
                   }
                 `}
               >
@@ -54,15 +58,15 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
                   <div className={`
                     w-12 h-12 rounded-lg flex items-center justify-center transition-all duration-300
                     ${isActive 
-                      ? 'bg-white/20 shadow-inner' 
-                      : 'bg-slate-800 group-hover:bg-slate-700'
+                      ? 'bg-primary-foreground/20 shadow-inner' 
+                      : 'bg-muted group-hover:bg-muted/70'
                     }
                   `}>
                     <Icon className="h-6 w-6" />
                   </div>
                   <div className="flex-1">
                     <h3 className="font-bold text-lg tracking-tight">{item.label}</h3>
-                    <p className={`text-sm mt-1 ${isActive ? 'text-white/80' : 'text-slate-400'}`}>
+                    <p className={`text-sm mt-1 ${isActive ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
                       {item.description}
                     </p>
                   </div>
@@ -71,7 +75,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
                 {/* Active indicator */}
                 {isActive && (
                   <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                    <div className="w-2 h-2 bg-primary-foreground rounded-full"></div>
                   </div>
                 )}
               </button>
@@ -81,10 +85,10 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
       </div>
 
       {/* Footer */}
-      <div className="p-6 border-t border-slate-800">
+      <div className="p-6 border-t border-border">
         <div className="text-center">
-          <p className="text-slate-500 text-sm font-medium">Powered by Advanced Telemetry</p>
-          <p className="text-slate-600 text-xs mt-1">Real-time Race Intelligence</p>
+          <p className="text-muted-foreground text-sm font-medium">Powered by Advanced Telemetry</p>
+          <p className="text-muted-foreground/70 text-xs mt-1">Real-time Race Intelligence</p>
         </div>
       </div>
     </nav>

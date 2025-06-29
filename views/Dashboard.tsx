@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { useData } from '../contexts/DataContext';
-import FileUploader from '../components/FileUploader';
+import EnhancedFileUploader from '../components/EnhancedFileUploader';
 import Navigation, { DashboardView } from '../components/Navigation';
 import OverviewDashboard from './OverviewDashboard';
 import PaceDashboard from './PaceDashboard';
 import StrategyDashboard from './StrategyDashboard';
 import DriverDashboard from './DriverDashboard';
+import ThemeToggle from '../components/ThemeToggle';
 
 const Dashboard: React.FC = () => {
-  const { raceData } = useData();
+  const { hasRaceData } = useData();
   const [currentView, setCurrentView] = useState<DashboardView>('overview');
 
   const renderDashboardContent = () => {
@@ -26,30 +27,35 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  if (!raceData) {
+  if (!hasRaceData()) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+      <div className="min-h-screen bg-background theme-transition">
         <div className="container mx-auto px-8 py-16">
           {/* Header */}
           <div className="text-center mb-16">
-            <div className="flex items-center justify-center gap-4 mb-8">
-              <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-red-600 rounded-3xl flex items-center justify-center shadow-2xl">
-                <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center justify-center gap-4 mb-8 relative">
+              <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-3xl flex items-center justify-center shadow-2xl">
+                <svg className="w-10 h-10 text-primary-foreground" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z"/>
                 </svg>
               </div>
+              
+              {/* Theme toggle positioned in top right */}
+              <div className="absolute top-0 right-0">
+                <ThemeToggle />
+              </div>
             </div>
-            <h1 className="text-6xl font-black text-slate-900 mb-6 tracking-tight">
+            <h1 className="text-6xl font-black text-card-foreground mb-6 tracking-tight">
               Race Data Analysis Dashboard
             </h1>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed font-medium">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-medium">
               Upload your comprehensive race analysis to explore performance insights with professional-grade telemetry visualization
             </p>
           </div>
 
-          {/* File Upload Section */}
-          <div className="max-w-4xl mx-auto">
-            <FileUploader />
+          {/* Enhanced File Upload Section */}
+          <div className="max-w-6xl mx-auto">
+            <EnhancedFileUploader />
           </div>
         </div>
       </div>
@@ -57,7 +63,7 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen bg-background flex theme-transition">
       {/* Sidebar Navigation */}
       <Navigation currentView={currentView} onViewChange={setCurrentView} />
 
