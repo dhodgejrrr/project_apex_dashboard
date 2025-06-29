@@ -6,6 +6,7 @@ import OverviewDashboard from './OverviewDashboard';
 import PaceDashboard from './PaceDashboard';
 import StrategyDashboard from './StrategyDashboard';
 import DriverDashboard from './DriverDashboard';
+import InsightsDashboard from './InsightsDashboard';
 import ThemeToggle from '../components/ThemeToggle';
 
 const Dashboard: React.FC = () => {
@@ -22,6 +23,8 @@ const Dashboard: React.FC = () => {
         return <StrategyDashboard />;
       case 'driver':
         return <DriverDashboard />;
+      case 'insights':
+        return <InsightsDashboard />;
       default:
         return <OverviewDashboard />;
     }
