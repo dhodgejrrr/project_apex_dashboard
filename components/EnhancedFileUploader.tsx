@@ -49,8 +49,6 @@ const EnhancedFileUploader: React.FC = () => {
     accept: { 'application/json': ['.json'] },
     multiple: false,
     disabled: isAnyLoading(),
-    noClick: false,
-    noKeyboard: false,
   });
 
   // Insights file drop zone
@@ -67,8 +65,6 @@ const EnhancedFileUploader: React.FC = () => {
     accept: { 'application/json': ['.json'] },
     multiple: false,
     disabled: isAnyLoading(),
-    noClick: false,
-    noKeyboard: false,
   });
 
   // Social media file drop zone
@@ -85,8 +81,6 @@ const EnhancedFileUploader: React.FC = () => {
     accept: { 'application/json': ['.json'] },
     multiple: false,
     disabled: isAnyLoading(),
-    noClick: false,
-    noKeyboard: false,
   });
 
   // File processing functions
@@ -242,7 +236,7 @@ const EnhancedFileUploader: React.FC = () => {
     isLoading = false,
     color 
   }) => (
-    <div className="bg-card rounded-2xl border border-border overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
+    <div className="bg-card rounded-2xl border border-border overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 theme-transition">
       <div className={`h-2 bg-gradient-to-r ${color}`} />
       
       <div className="p-6">
@@ -307,7 +301,7 @@ const EnhancedFileUploader: React.FC = () => {
               ${isAnyLoading() ? 'opacity-50 cursor-not-allowed' : ''}
             `}
           >
-            <input {...getInputProps()} disabled={isAnyLoading()} />
+            <input {...getInputProps()} />
             <Upload className={`h-8 w-8 mx-auto mb-3 ${isDragActive ? 'text-primary' : 'text-muted-foreground'}`} />
             <p className="text-sm font-medium text-card-foreground mb-1">
               {isDragActive ? 'Drop file here' : 'Click to browse or drag & drop'}
