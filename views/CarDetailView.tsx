@@ -4,6 +4,7 @@ import { ArrowLeft, Clock, Zap, Users, Gauge, TrendingUp, Timer, Fuel } from 'lu
 import { useData } from '../contexts/DataContext';
 import StintChart from '../components/charts/StintChart';
 import TireDegradationChart from '../components/charts/TireDegradationChart';
+import SectorChart from '../components/charts/SectorChart';
 import PitStopTimeline from '../components/PitStopTimeline';
 
 const CarDetailView: React.FC = () => {
@@ -63,6 +64,23 @@ const CarDetailView: React.FC = () => {
       'Cupra': 'from-amber-500 via-orange-500 to-red-500',
     };
     return gradients[carAnalysis.manufacturer] || 'from-gray-500 via-gray-600 to-gray-700';
+  };
+
+  // Prepare sector data for the chart
+  const prepareSectorData = () => {
+    // For demonstration, we'll create sample sector data
+    // In a real implementation, this would come from the race data
+    const sampleData = [
+      { lap: 1, s1: 35.123, s2: 42.567, s3: 38.146, total: 115.836 },
+      { lap: 2, s1: 35.089, s2: 42.634, s3: 38.203, total: 115.926 },
+      { lap: 3, s1: 35.156, s2: 42.512, s3: 38.089, total: 115.757 },
+      { lap: 4, s1: 35.201, s2: 42.678, s3: 38.234, total: 116.113 },
+      { lap: 5, s1: 35.067, s2: 42.489, s3: 38.067, total: 115.623 },
+      { lap: 6, s1: 35.134, s2: 42.601, s3: 38.178, total: 115.913 },
+      { lap: 7, s1: 35.098, s2: 42.534, s3: 38.123, total: 115.755 },
+      { lap: 8, s1: 35.167, s2: 42.612, s3: 38.201, total: 115.980 },
+    ];
+    return sampleData;
   };
 
   return (
@@ -140,6 +158,16 @@ const CarDetailView: React.FC = () => {
               {carAnalysis.tire_degradation_model.end_of_stint_deg_rate_s_per_lap.toFixed(3)}s/lap
             </p>
           </div>
+        </div>
+
+        {/* Sector Analysis */}
+        <div className="mb-12">
+          <SectorChart
+            data={prepareSectorData()}
+            title="Sector Performance Analysis"
+            subtitle="Lap-by-lap sector time breakdown with delta comparison"
+            height={400}
+          />
         </div>
 
         {/* Charts Grid */}

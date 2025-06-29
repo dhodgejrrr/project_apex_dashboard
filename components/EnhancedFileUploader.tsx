@@ -3,6 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import { Upload, FileX, CheckCircle, Database, FileText, MessageSquare, TrendingUp, X, AlertCircle } from 'lucide-react';
 import { useData } from '../contexts/DataContext';
 import { RaceData, InsightsData, SocialMediaData } from '../types/race-data';
+import DatasetSelector from './DatasetSelector';
 
 interface FileUploadState {
   raceFile: File | null;
@@ -16,7 +17,7 @@ const EnhancedFileUploader: React.FC = () => {
     setIsLoadingRace, setIsLoadingInsights, setIsLoadingSocial,
     setRaceError, setInsightsError, setSocialError,
     isAnyLoading, hasAnyError, getAllErrors, clearAllErrors,
-    extractDataRelationships
+    extractDataRelationships, hasRaceData
   } = useData();
 
   const [files, setFiles] = useState<FileUploadState>({
@@ -221,6 +222,29 @@ const EnhancedFileUploader: React.FC = () => {
           Upload your race analysis files to begin visualization. The main race analysis is required, 
           while insights and social media files are optional but provide enhanced analysis.
         </p>
+      </div>
+
+      {/* Dataset Selector */}
+      <div className="bg-card rounded-2xl border border-border p-8 theme-transition">
+        <div className="text-center mb-6">
+          <h3 className="text-xl font-bold text-card-foreground mb-2">Quick Start with Sample Datasets</h3>
+          <p className="text-muted-foreground">
+            Select from available sample datasets to explore the dashboard features
+          </p>
+        </div>
+        <div className="flex justify-center">
+          <DatasetSelector />
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-border"></div>
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="px-4 bg-background text-muted-foreground font-medium">Or upload your own files</span>
+        </div>
       </div>
 
       {/* File Upload Cards */}
@@ -474,33 +498,35 @@ const EnhancedFileUploader: React.FC = () => {
         </div>
       )}
 
-      {/* Visualize Button */}
-      <div className="flex justify-center">
-        <button
-          onClick={handleVisualize}
-          disabled={!files.raceFile || isAnyLoading()}
-          className="
-            px-12 py-4 bg-primary hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground
-            text-primary-foreground font-bold text-lg rounded-2xl
-            transition-all duration-300 ease-out
-            hover:scale-105 hover:shadow-xl
-            disabled:hover:scale-100 disabled:hover:shadow-none disabled:cursor-not-allowed
-            flex items-center gap-3
-          "
-        >
-          {isAnyLoading() ? (
-            <>
-              <div className="animate-spin rounded-full h-6 w-6 border-2 border-primary-foreground/30 border-t-primary-foreground" />
-              Processing Files...
-            </>
-          ) : (
-            <>
-              <TrendingUp className="h-6 w-6" />
-              Visualize Race Data
-            </>
-          )}
-        </button>
-      </div>
+      {/* Visualize Button - Only show if files are selected and no data is loaded */}
+      {!hasRaceData() && (
+        <div className="flex justify-center">
+          <button
+            onClick={handleVisualize}
+            disabled={!files.raceFile || isAnyLoading()}
+            className="
+              px-12 py-4 bg-primary hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground
+              text-primary-foreground font-bold text-lg rounded-2xl
+              transition-all duration-300 ease-out
+              hover:scale-105 hover:shadow-xl
+              disabled:hover:scale-100 disabled:hover:shadow-none disabled:cursor-not-allowed
+              flex items-center gap-3
+            "
+          >
+            {isAnyLoading() ? (
+              <>
+                <div className="animate-spin rounded-full h-6 w-6 border-2 border-primary-foreground/30 border-t-primary-foreground" />
+                Processing Files...
+              </>
+            ) : (
+              <>
+                <TrendingUp className="h-6 w-6" />
+                Visualize Race Data
+              </>
+            )}
+          </button>
+        </div>
+      )}
 
       {/* File Status Summary */}
       {(files.raceFile || files.insightsFile || files.socialFile) && (
