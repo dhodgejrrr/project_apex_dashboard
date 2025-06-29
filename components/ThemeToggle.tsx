@@ -17,6 +17,7 @@ const ThemeToggle: React.FC = () => {
         group
       "
       aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+      title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
     >
       <div className="relative w-6 h-6">
         {/* Sun icon */}
