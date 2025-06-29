@@ -77,12 +77,12 @@ const StrategyDashboard: React.FC = () => {
       {/* Enhanced Strategy Analysis Section */}
       <div className="space-y-8">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-gradient-to-br from-racing-600 to-racing-700 rounded-xl flex items-center justify-center">
+          <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center">
             <TrendingUp className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-racing-900 font-racing">Enhanced Strategy Analysis</h2>
-            <p className="text-racing-600">Comprehensive performance metrics and tire degradation analysis</p>
+            <h2 className="text-2xl font-bold text-card-foreground font-racing">Enhanced Strategy Analysis</h2>
+            <p className="text-muted-foreground">Comprehensive performance metrics and tire degradation analysis</p>
           </div>
         </div>
         
