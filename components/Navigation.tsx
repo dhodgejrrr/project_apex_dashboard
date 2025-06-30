@@ -73,7 +73,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
                 <TrendingUp className="h-7 w-7 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-2xl font-black text-card-foreground tracking-tight">Race Analytics</h1>
+                <h1 className="text-2xl font-black text-card-foreground tracking-tight">RaceLens</h1>
                 <p className="text-muted-foreground text-sm font-medium">Professional Telemetry</p>
               </div>
             </div>
