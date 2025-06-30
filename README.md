@@ -4,6 +4,8 @@
 
 This project is a comprehensive web-based dashboard that ingests and visualizes race analysis data. It was built for a hackathon to demonstrate a modern, user-friendly tool for motorsport analysis.
 
+~ [Deployed Demo](https://shimmering-cannoli-1af4aa.netlify.app/) ~
+
 ## What it does
 
 RaceLens transforms complex race data into beautiful, intuitive, and actionable visualizations. It allows users to upload multiple JSON files—a core race analysis file, an optional AI-generated insights summary, and optional AI-generated social media content—to create a unified, interactive experience.
