@@ -35,7 +35,16 @@ const Dashboard: React.FC = () => {
 
   if (!hasRaceData()) {
     return (
-      <div className="min-h-screen bg-background theme-transition">
+      <div className="min-h-screen bg-background theme-transition relative">
+        {/* Black circle asset in top right */}
+        <div className="absolute top-4 right-4 z-10">
+          <img 
+            src="/assets/black_circle_360x360.png" 
+            alt="Black Circle Asset" 
+            className="w-12 h-12 sm:w-16 sm:h-16 opacity-80 hover:opacity-100 transition-opacity duration-300"
+          />
+        </div>
+        
         <div className="container mx-auto px-4 sm:px-8 py-8 sm:py-16">
           {/* Header */}
           <div className="text-center mb-8 sm:mb-16">
@@ -69,7 +78,16 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex theme-transition">
+    <div className="min-h-screen bg-background flex theme-transition relative">
+      {/* Black circle asset in top right */}
+      <div className="absolute top-4 right-4 z-20">
+        <img 
+          src="/assets/black_circle_360x360.png" 
+          alt="Black Circle Asset" 
+          className="w-12 h-12 sm:w-16 sm:h-16 opacity-80 hover:opacity-100 transition-opacity duration-300"
+        />
+      </div>
+
       {/* Sidebar Navigation */}
       <Navigation currentView={currentView} onViewChange={setCurrentView} />
 
