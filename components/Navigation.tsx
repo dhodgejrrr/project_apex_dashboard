@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { BarChart3, Zap, Users, Trophy, TrendingUp, Lightbulb, Menu, X } from 'lucide-react';
+import { BarChart3, Zap, Users, Trophy, TrendingUp, Lightbulb, Menu, X, Bot } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 
-export type DashboardView = 'overview' | 'pace' | 'strategy' | 'driver' | 'insights';
+export type DashboardView = 'overview' | 'pace' | 'strategy' | 'driver' | 'insights' | 'ai-agent';
 
 interface NavigationProps {
   currentView: DashboardView;
@@ -18,6 +18,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
     { id: 'strategy' as DashboardView, label: 'Strategy', icon: BarChart3, description: 'Pit stops & tactics' },
     { id: 'driver' as DashboardView, label: 'Driver Performance', icon: Users, description: 'Individual comparisons' },
     { id: 'insights' as DashboardView, label: 'Race Insights', icon: Lightbulb, description: 'Strategic analysis & social' },
+    { id: 'ai-agent' as DashboardView, label: 'AI Agent', icon: Bot, description: 'Chat with race data assistant' },
   ];
 
   const handleNavItemClick = (view: DashboardView) => {

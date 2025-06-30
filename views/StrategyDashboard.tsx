@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useData } from '../contexts/DataContext';
 import BarChartWrapper from '../components/charts/BarChartWrapper';
 import CarCard from '../components/CarCard';
-import { BarChart3, Timer, TrendingUp } from 'lucide-react';
+import { BarChart3, TrendingUp } from 'lucide-react';
 
 const StrategyDashboard: React.FC = () => {
   const { raceData } = useData();
@@ -26,6 +26,12 @@ const StrategyDashboard: React.FC = () => {
     laps: stint.longest_green_stint_laps,
     car: `#${stint.stint_details.car_number}`,
   }));
+
+  // Calculate custom Y-axis domain for longest stints chart
+  const longestStintsValues = longestStintsData.map(stint => stint.laps);
+  const minLaps = Math.min(...longestStintsValues);
+  const maxLaps = Math.max(...longestStintsValues);
+  const longestStintsYAxisDomain: [number, number] = [minLaps - 1, maxLaps + 1];
 
   const handleCarClick = (carNumber: string) => {
     navigate(`/car/${carNumber}`);
@@ -71,6 +77,7 @@ const StrategyDashboard: React.FC = () => {
           color="#f59e0b"
           height={450}
           formatValue={(value) => `${value} laps`}
+          yAxisDomain={longestStintsYAxisDomain}
         />
       </div>
 

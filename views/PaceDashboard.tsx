@@ -17,9 +17,9 @@ const PaceDashboard: React.FC = () => {
       driver: car.driver_name,
     }));
 
-  // Calculate dynamic minimum for perfect lap chart (15% below lowest value)
+  // Calculate dynamic minimum for perfect lap chart (0.5 below lowest value)
   const minPerfection = Math.min(...perfectLapRawData.map(d => d.perfection));
-  const dynamicMin = Math.max(0, minPerfection - (minPerfection * 0.15));
+  const dynamicMin = Math.max(0, minPerfection - 0.5);
 
   // Actual vs Optimal Lap Time Data with filtering for erroneous values
   const actualVsOptimalRawData = raceData.fastest_by_car_number
@@ -99,7 +99,7 @@ const PaceDashboard: React.FC = () => {
             </div>
             <div className="mt-4 p-4 bg-muted/30 rounded-xl">
               <p className="text-sm text-muted-foreground font-medium">
-                <strong>Chart Range:</strong> {dynamicMin.toFixed(1)}% - 100% (dynamically scaled to show meaningful differences)
+                <strong>Chart Range:</strong> {dynamicMin.toFixed(1)}% - 100% (minimum set to 0.5% below lowest value for better visualization)
               </p>
             </div>
           </div>
@@ -178,7 +178,7 @@ const PaceDashboard: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-card divide-y divide-border">
-              {raceData.fastest_by_manufacturer.map((manufacturer, index) => {
+              {raceData.fastest_by_manufacturer.map((manufacturer) => {
                 // Calculate gap to optimal for this manufacturer
                 const parseTime = (timeStr: string): number => {
                   if (timeStr.includes(':')) {

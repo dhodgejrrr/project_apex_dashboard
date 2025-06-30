@@ -2,7 +2,6 @@ import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, FileX, CheckCircle, Database, FileText, MessageSquare, TrendingUp, X, AlertCircle } from 'lucide-react';
 import { useData } from '../contexts/DataContext';
-import { RaceData, InsightsData, SocialMediaData } from '../types/race-data';
 import DatasetSelector from './DatasetSelector';
 
 interface FileUploadState {
@@ -13,11 +12,12 @@ interface FileUploadState {
 
 const EnhancedFileUploader: React.FC = () => {
   const { 
-    setRaceData, setInsightsData, setSocialMediaData,
-    setIsLoadingRace, setIsLoadingInsights, setIsLoadingSocial,
-    setRaceError, setInsightsError, setSocialError,
-    isAnyLoading, hasAnyError, getAllErrors, clearAllErrors,
-    extractDataRelationships, hasRaceData
+    uploadFiles,
+    isAnyLoading,
+    hasAnyError,
+    getAllErrors,
+    clearAllErrors,
+    hasRaceData
   } = useData();
 
   const [files, setFiles] = useState<FileUploadState>({
@@ -26,24 +26,13 @@ const EnhancedFileUploader: React.FC = () => {
     socialFile: null,
   });
 
-  const [uploadProgress, setUploadProgress] = useState<{
-    race: boolean;
-    insights: boolean;
-    social: boolean;
-  }>({
-    race: false,
-    insights: false,
-    social: false,
-  });
-
   // Race data file drop zone
   const onRaceFileDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (file) {
       setFiles(prev => ({ ...prev, raceFile: file }));
-      setRaceError(null);
     }
-  }, [setRaceError]);
+  }, []);
 
   const { getRootProps: getRaceRootProps, getInputProps: getRaceInputProps, isDragActive: isRaceDragActive } = useDropzone({
     onDrop: onRaceFileDrop,
@@ -57,9 +46,8 @@ const EnhancedFileUploader: React.FC = () => {
     const file = acceptedFiles[0];
     if (file) {
       setFiles(prev => ({ ...prev, insightsFile: file }));
-      setInsightsError(null);
     }
-  }, [setInsightsError]);
+  }, []);
 
   const { getRootProps: getInsightsRootProps, getInputProps: getInsightsInputProps, isDragActive: isInsightsDragActive } = useDropzone({
     onDrop: onInsightsFileDrop,
@@ -73,9 +61,8 @@ const EnhancedFileUploader: React.FC = () => {
     const file = acceptedFiles[0];
     if (file) {
       setFiles(prev => ({ ...prev, socialFile: file }));
-      setSocialError(null);
     }
-  }, [setSocialError]);
+  }, []);
 
   const { getRootProps: getSocialRootProps, getInputProps: getSocialInputProps, isDragActive: isSocialDragActive } = useDropzone({
     onDrop: onSocialFileDrop,
@@ -84,126 +71,38 @@ const EnhancedFileUploader: React.FC = () => {
     disabled: isAnyLoading(),
   });
 
-  // File processing functions
-  const processFile = async <T,>(
-    file: File,
-    setData: (data: T) => void,
-    setLoading: (loading: boolean) => void,
-    setError: (error: string | null) => void,
-    validator?: (data: any) => boolean,
-    progressKey?: keyof typeof uploadProgress
-  ): Promise<boolean> => {
-    setLoading(true);
-    setError(null);
-    
-    if (progressKey) {
-      setUploadProgress(prev => ({ ...prev, [progressKey]: true }));
-    }
-
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      
-      reader.onload = (e) => {
-        try {
-          const text = e.target?.result as string;
-          const data = JSON.parse(text);
-          
-          if (validator && !validator(data)) {
-            throw new Error('Invalid file format');
-          }
-          
-          setData(data);
-          setLoading(false);
-          if (progressKey) {
-            setUploadProgress(prev => ({ ...prev, [progressKey]: false }));
-          }
-          resolve(true);
-        } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Failed to parse JSON file';
-          setError(errorMessage);
-          setLoading(false);
-          if (progressKey) {
-            setUploadProgress(prev => ({ ...prev, [progressKey]: false }));
-          }
-          resolve(false);
-        }
-      };
-
-      reader.onerror = () => {
-        setError('Failed to read file');
-        setLoading(false);
-        if (progressKey) {
-          setUploadProgress(prev => ({ ...prev, [progressKey]: false }));
-        }
-        resolve(false);
-      };
-
-      reader.readAsText(file);
-    });
-  };
-
-  // Validators
-  const validateRaceData = (data: any): boolean => {
-    return data && Array.isArray(data.fastest_by_car_number) && data.fastest_by_car_number.length > 0;
-  };
-
-  const validateInsightsData = (data: any): boolean => {
-    return data && typeof data.executive_summary === 'string' && Array.isArray(data.marketing_angles);
-  };
-
-  const validateSocialData = (data: any): boolean => {
-    return data && Array.isArray(data.posts) && data.posts.length > 0;
-  };
-
-  // Handle visualization
+  // Handle visualization using new dataset system
   const handleVisualize = async () => {
     if (!files.raceFile) {
-      setRaceError('Race analysis file is required');
       return;
     }
 
     clearAllErrors();
-
-    // Process race data (required)
-    const raceSuccess = await processFile<RaceData>(
-      files.raceFile,
-      setRaceData,
-      setIsLoadingRace,
-      setRaceError,
-      validateRaceData,
-      'race'
-    );
-
-    if (!raceSuccess) return;
-
-    // Process insights data (optional)
+    
+    // Prepare files for upload
+    const filesToUpload: { [key: string]: File } = {};
+    
+    if (files.raceFile) {
+      filesToUpload.raceAnalysis = files.raceFile;
+    }
     if (files.insightsFile) {
-      await processFile<InsightsData>(
-        files.insightsFile,
-        setInsightsData,
-        setIsLoadingInsights,
-        setInsightsError,
-        validateInsightsData,
-        'insights'
-      );
+      filesToUpload.insights = files.insightsFile;
     }
-
-    // Process social media data (optional)
     if (files.socialFile) {
-      await processFile<SocialMediaData>(
-        files.socialFile,
-        setSocialMediaData,
-        setIsLoadingSocial,
-        setSocialError,
-        validateSocialData,
-        'social'
-      );
+      filesToUpload.social = files.socialFile;
     }
 
-    // Extract data relationships after all files are processed
-    setTimeout(() => {
-      extractDataRelationships();
-    }, 100);
+    // Upload files using the new dataset management system
+    const success = await uploadFiles(filesToUpload);
+    
+    if (success) {
+      // Clear the file inputs after successful upload
+      setFiles({
+        raceFile: null,
+        insightsFile: null,
+        socialFile: null,
+      });
+    }
   };
 
   // Remove file
@@ -280,7 +179,7 @@ const EnhancedFileUploader: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  {!uploadProgress.race && (
+                  {!isAnyLoading() && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -294,7 +193,7 @@ const EnhancedFileUploader: React.FC = () => {
                   )}
                 </div>
                 
-                {uploadProgress.race && (
+                {isAnyLoading() && (
                   <div className="mt-3">
                     <div className="w-full bg-muted-foreground/20 rounded-full h-2">
                       <div className="bg-primary h-2 rounded-full animate-pulse" style={{ width: '60%' }} />
@@ -356,7 +255,7 @@ const EnhancedFileUploader: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  {!uploadProgress.insights && (
+                  {!isAnyLoading() && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -370,7 +269,7 @@ const EnhancedFileUploader: React.FC = () => {
                   )}
                 </div>
                 
-                {uploadProgress.insights && (
+                {isAnyLoading() && (
                   <div className="mt-3">
                     <div className="w-full bg-muted-foreground/20 rounded-full h-2">
                       <div className="bg-primary h-2 rounded-full animate-pulse" style={{ width: '60%' }} />
@@ -432,7 +331,7 @@ const EnhancedFileUploader: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  {!uploadProgress.social && (
+                  {!isAnyLoading() && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -446,7 +345,7 @@ const EnhancedFileUploader: React.FC = () => {
                   )}
                 </div>
                 
-                {uploadProgress.social && (
+                {isAnyLoading() && (
                   <div className="mt-3">
                     <div className="w-full bg-muted-foreground/20 rounded-full h-2">
                       <div className="bg-primary h-2 rounded-full animate-pulse" style={{ width: '60%' }} />

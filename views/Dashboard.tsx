@@ -7,6 +7,7 @@ import PaceDashboard from './PaceDashboard';
 import StrategyDashboard from './StrategyDashboard';
 import DriverDashboard from './DriverDashboard';
 import InsightsDashboard from './InsightsDashboard';
+import AIAgentDashboard from './AIAgentDashboard';
 import ThemeToggle from '../components/ThemeToggle';
 
 const Dashboard: React.FC = () => {
@@ -25,6 +26,8 @@ const Dashboard: React.FC = () => {
         return <DriverDashboard />;
       case 'insights':
         return <InsightsDashboard />;
+      case 'ai-agent':
+        return <AIAgentDashboard />;
       default:
         return <OverviewDashboard onViewChange={setCurrentView} />;
     }
@@ -49,7 +52,7 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
             <h1 className="text-4xl sm:text-6xl font-black text-card-foreground mb-4 sm:mb-6 tracking-tight">
-              Race Data Analysis Dashboard
+              RaceLens
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-medium px-4">
               Upload your comprehensive race analysis to explore performance insights with professional-grade telemetry visualization

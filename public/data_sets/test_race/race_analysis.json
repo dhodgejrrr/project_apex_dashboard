@@ -1,0 +1,60 @@
+{
+  "race_name": "Monaco Grand Prix 2024",
+  "circuit": "Circuit de Monaco",
+  "date": "2024-05-26",
+  "weather": "Sunny, 24°C",
+  "fastest_by_car_number": [
+    {
+      "car_number": "1",
+      "driver": "Max Verstappen",
+      "team": "Red Bull Racing",
+      "fastest_lap": "1:12.345",
+      "gap_to_leader": "0.000",
+      "position": 1
+    },
+    {
+      "car_number": "16",
+      "driver": "Charles Leclerc",
+      "team": "Ferrari",
+      "fastest_lap": "1:12.567",
+      "gap_to_leader": "+0.234",
+      "position": 2
+    },
+    {
+      "car_number": "55",
+      "driver": "Carlos Sainz",
+      "team": "Ferrari",
+      "fastest_lap": "1:12.789",
+      "gap_to_leader": "+0.456",
+      "position": 3
+    }
+  ],
+  "sector_analysis": {
+    "sector_1": {
+      "fastest_time": "24.123",
+      "fastest_car": "1"
+    },
+    "sector_2": {
+      "fastest_time": "28.456", 
+      "fastest_car": "16"
+    },
+    "sector_3": {
+      "fastest_time": "19.789",
+      "fastest_car": "55"
+    }
+  },
+  "pit_stops": [
+    {
+      "car_number": "1",
+      "lap": 25,
+      "duration": "2.4s",
+      "tire_change": "Medium to Hard"
+    },
+    {
+      "car_number": "16", 
+      "lap": 28,
+      "duration": "2.6s",
+      "tire_change": "Medium to Hard"
+    }
+  ]
+}

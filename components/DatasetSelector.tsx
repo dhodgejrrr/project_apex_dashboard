@@ -1,143 +1,48 @@
 import React, { useState, useEffect } from 'react';
-import { Database, ChevronDown, CheckCircle, Folder } from 'lucide-react';
+import { Database, ChevronDown, CheckCircle, Folder, Trash2, AlertCircle } from 'lucide-react';
 import { useData } from '../contexts/DataContext';
-import { RaceData, InsightsData, SocialMediaData } from '../types/race-data';
-
-interface Dataset {
-  name: string;
-  path: string;
-  hasRaceAnalysis: boolean;
-  hasInsights: boolean;
-  hasSocial: boolean;
-}
+import { Dataset } from '../types/dataset-types';
 
 const DatasetSelector: React.FC = () => {
-  const [datasets, setDatasets] = useState<Dataset[]>([]);
-  const [selectedDataset, setSelectedDataset] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const {
-    setRaceData, setInsightsData, setSocialMediaData,
-    setIsLoadingRace, setIsLoadingInsights, setIsLoadingSocial,
-    setRaceError, setInsightsError, setSocialError,
-    clearAllErrors, extractDataRelationships
+    currentDataset,
+    availableDatasets,
+    isLoadingDatasets,
+    datasetError,
+    loadDatasetById,
+    refreshAvailableDatasets,
+    deleteDataset,
+    clearAllErrors
   } = useData();
 
-  // Scan for datasets on component mount
+  // Load available datasets on component mount (if not already loaded)
   useEffect(() => {
-    scanDatasets();
-  }, []);
-
-  const scanDatasets = async () => {
-    try {
-      // Check for known datasets in the public directory
-      const knownDatasets = ['impc_watkins_2025'];
-      const foundDatasets: Dataset[] = [];
-
-      for (const datasetName of knownDatasets) {
-        try {
-          // Check which files exist for this dataset
-          const basePath = `/data_sets/${datasetName}`;
-          
-          // Try to fetch each file to see if it exists
-          const raceAnalysisExists = await checkFileExists(`${basePath}/race_analysis.json`);
-          const insightsExists = await checkFileExists(`${basePath}/insights.json`);
-          const socialExists = await checkFileExists(`${basePath}/social.json`);
-
-          if (raceAnalysisExists || insightsExists || socialExists) {
-            foundDatasets.push({
-              name: datasetName,
-              path: basePath,
-              hasRaceAnalysis: raceAnalysisExists,
-              hasInsights: insightsExists,
-              hasSocial: socialExists,
-            });
-          }
-        } catch (error) {
-          console.warn(`Failed to check dataset ${datasetName}:`, error);
-        }
-      }
-
-      setDatasets(foundDatasets);
-    } catch (error) {
-      console.error('Failed to scan datasets:', error);
-      setError('Failed to scan available datasets');
+    if (!isLoadingDatasets && availableDatasets.length === 0 && !datasetError) {
+      refreshAvailableDatasets();
     }
-  };
+  }, [isLoadingDatasets, availableDatasets.length, datasetError, refreshAvailableDatasets]);
 
-  const checkFileExists = async (path: string): Promise<boolean> => {
-    try {
-      const response = await fetch(path, { method: 'HEAD' });
-      return response.ok;
-    } catch {
-      return false;
-    }
-  };
-
-  const loadDataset = async (dataset: Dataset) => {
-    setIsLoading(true);
-    setError(null);
+  const handleLoadDataset = async (dataset: Dataset) => {
+    setIsOpen(false);
     clearAllErrors();
+    
+    const success = await loadDatasetById(dataset.metadata.id);
+    if (!success) {
+      console.error('Failed to load dataset:', dataset.metadata.name);
+    }
+  };
 
-    try {
-      // Load race analysis (required)
-      if (dataset.hasRaceAnalysis) {
-        setIsLoadingRace(true);
-        try {
-          const raceResponse = await fetch(`${dataset.path}/race_analysis.json`);
-          if (!raceResponse.ok) throw new Error('Failed to fetch race analysis');
-          const raceData: RaceData = await raceResponse.json();
-          setRaceData(raceData);
-          setIsLoadingRace(false);
-        } catch (error) {
-          setRaceError('Failed to load race analysis data');
-          setIsLoadingRace(false);
-        }
-      }
+  const handleDeleteDataset = async (dataset: Dataset, event: React.MouseEvent) => {
+    event.stopPropagation();
+    
+    if (dataset.metadata.source === 'preloaded') {
+      return; // Cannot delete preloaded datasets
+    }
 
-      // Load insights (optional)
-      if (dataset.hasInsights) {
-        setIsLoadingInsights(true);
-        try {
-          const insightsResponse = await fetch(`${dataset.path}/insights.json`);
-          if (!insightsResponse.ok) throw new Error('Failed to fetch insights');
-          const insightsData: InsightsData = await insightsResponse.json();
-          setInsightsData(insightsData);
-          setIsLoadingInsights(false);
-        } catch (error) {
-          setInsightsError('Failed to load insights data');
-          setIsLoadingInsights(false);
-        }
-      }
-
-      // Load social media (optional)
-      if (dataset.hasSocial) {
-        setIsLoadingSocial(true);
-        try {
-          const socialResponse = await fetch(`${dataset.path}/social.json`);
-          if (!socialResponse.ok) throw new Error('Failed to fetch social data');
-          const socialData: SocialMediaData = await socialResponse.json();
-          setSocialMediaData(socialData);
-          setIsLoadingSocial(false);
-        } catch (error) {
-          setSocialError('Failed to load social media data');
-          setIsLoadingSocial(false);
-        }
-      }
-
-      // Extract data relationships after all files are processed
-      setTimeout(() => {
-        extractDataRelationships();
-      }, 100);
-
-      setSelectedDataset(dataset.name);
-      setIsOpen(false);
-    } catch (error) {
-      setError('Failed to load dataset');
-    } finally {
-      setIsLoading(false);
+    if (confirm(`Are you sure you want to delete "${dataset.metadata.displayName}"?`)) {
+      await deleteDataset(dataset.metadata.id);
     }
   };
 
@@ -148,12 +53,16 @@ const DatasetSelector: React.FC = () => {
       .join(' ');
   };
 
+  const getDatasetDisplayName = (dataset: Dataset) => {
+    return dataset.metadata.displayName || formatDatasetName(dataset.metadata.name);
+  };
+
   return (
     <div className="w-full max-w-md">
       <div className="relative">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          disabled={isLoading || datasets.length === 0}
+          disabled={isLoadingDatasets || availableDatasets.length === 0}
           className="
             w-full flex items-center justify-between px-4 py-3 
             bg-card border border-border rounded-xl
@@ -166,15 +75,15 @@ const DatasetSelector: React.FC = () => {
           <div className="flex items-center gap-3">
             <Database className="h-5 w-5 text-primary" />
             <span>
-              {selectedDataset 
-                ? formatDatasetName(selectedDataset)
-                : datasets.length > 0 
+              {currentDataset 
+                ? getDatasetDisplayName(currentDataset)
+                : availableDatasets.length > 0 
                   ? 'Select Dataset' 
                   : 'No Datasets Available'
               }
             </span>
           </div>
-          {datasets.length > 0 && (
+          {availableDatasets.length > 0 && (
             <ChevronDown 
               className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${
                 isOpen ? 'rotate-180' : ''
@@ -184,18 +93,18 @@ const DatasetSelector: React.FC = () => {
         </button>
 
         {/* Dropdown Menu */}
-        {isOpen && datasets.length > 0 && (
+        {isOpen && availableDatasets.length > 0 && (
           <div className="
             absolute top-full left-0 right-0 mt-2 z-50
             bg-card border border-border rounded-xl shadow-xl
             overflow-hidden theme-transition
           ">
             <div className="max-h-64 overflow-y-auto">
-              {datasets.map((dataset) => (
+              {availableDatasets.map((dataset) => (
                 <button
-                  key={dataset.name}
-                  onClick={() => loadDataset(dataset)}
-                  disabled={isLoading}
+                  key={dataset.metadata.id}
+                  onClick={() => handleLoadDataset(dataset)}
+                  disabled={isLoadingDatasets}
                   className="
                     w-full px-4 py-3 text-left
                     hover:bg-accent transition-colors
@@ -208,9 +117,16 @@ const DatasetSelector: React.FC = () => {
                       <Folder className="h-4 w-4 text-primary" />
                       <div>
                         <p className="font-medium text-card-foreground">
-                          {formatDatasetName(dataset.name)}
+                          {getDatasetDisplayName(dataset)}
                         </p>
                         <div className="flex items-center gap-2 mt-1">
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${
+                            dataset.metadata.source === 'preloaded' 
+                              ? 'bg-primary/20 text-primary' 
+                              : 'bg-secondary/20 text-secondary'
+                          }`}>
+                            {dataset.metadata.source === 'preloaded' ? 'Sample' : 'Uploaded'}
+                          </span>
                           {dataset.hasRaceAnalysis && (
                             <span className="text-xs bg-success/20 text-success px-2 py-0.5 rounded-full">
                               Race
@@ -229,9 +145,21 @@ const DatasetSelector: React.FC = () => {
                         </div>
                       </div>
                     </div>
-                    {selectedDataset === dataset.name && (
-                      <CheckCircle className="h-5 w-5 text-success" />
-                    )}
+                    
+                    <div className="flex items-center gap-2">
+                      {currentDataset && currentDataset.metadata.id === dataset.metadata.id && (
+                        <CheckCircle className="h-5 w-5 text-success" />
+                      )}
+                      {dataset.metadata.source === 'uploaded' && (
+                        <button
+                          onClick={(e) => handleDeleteDataset(dataset, e)}
+                          className="p-1 hover:bg-error/10 rounded-lg transition-colors group"
+                          title="Delete dataset"
+                        >
+                          <Trash2 className="h-4 w-4 text-muted-foreground group-hover:text-error" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </button>
               ))}
@@ -241,23 +169,41 @@ const DatasetSelector: React.FC = () => {
       </div>
 
       {/* Loading State */}
-      {isLoading && (
+      {isLoadingDatasets && (
         <div className="mt-4 p-4 bg-primary/10 border border-primary/20 rounded-xl">
           <div className="flex items-center gap-3">
             <div className="animate-spin rounded-full h-5 w-5 border-2 border-primary/30 border-t-primary" />
-            <span className="text-primary font-medium">Loading dataset...</span>
+            <span className="text-primary font-medium">Loading datasets...</span>
           </div>
         </div>
       )}
 
       {/* Error State */}
-      {error && (
+      {datasetError && (
         <div className="mt-4 p-4 bg-error/10 border border-error/20 rounded-xl">
-          <p className="text-error font-medium">{error}</p>
+          <div className="flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-error flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-error font-medium">Dataset Error</p>
+              <p className="text-error/80 text-sm mt-1">{datasetError}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!isLoadingDatasets && availableDatasets.length === 0 && !datasetError && (
+        <div className="mt-4 p-4 bg-muted/50 border border-border rounded-xl text-center">
+          <Folder className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+          <p className="text-muted-foreground font-medium">No datasets available</p>
+          <p className="text-muted-foreground/70 text-sm mt-1">
+            Upload files using the form below to get started
+          </p>
         </div>
       )}
     </div>
   );
 };
 
+export { DatasetSelector };
 export default DatasetSelector;
