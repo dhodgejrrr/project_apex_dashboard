@@ -141,8 +141,8 @@ const Navigation: React.FC<NavigationProps> = ({ currentView, onViewChange }) =>
             <ThemeToggle />
           </div>
           <div className="text-center">
-            <p className="text-muted-foreground text-sm font-medium">Powered by Advanced Telemetry</p>
-            <p className="text-muted-foreground/70 text-xs mt-1">Real-time Race Intelligence</p>
+            <p className="text-muted-foreground text-sm font-medium">Powered by Sector4</p>
+            <p className="text-muted-foreground/70 text-xs mt-1">Where Velocity is Engineered.</p>
           </div>
         </div>
       </nav>

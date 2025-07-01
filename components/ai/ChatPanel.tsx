@@ -95,7 +95,7 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
             </div>
             <div>
               <h2 className="font-semibold text-card-foreground">AI Race Assistant</h2>
-              <p className="text-xs text-muted-foreground">Powered by Tavus</p>
+              <p className="text-xs text-muted-foreground">Powered by OpenRouter</p>
             </div>
           </div>
           <button
