@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback, Suspense } from 'react';
 import { useData } from '../contexts/DataContext';
 import { 
   Clock, Flag, Zap, AlertCircle, Trophy, Car, Users, 
-  ArrowRightLeft, Timer, Gauge, Activity, ChevronDown, ChevronUp 
+  ArrowRightLeft, Timer, Gauge, Activity, ChevronDown, ChevronUp,
+  Loader2, AlertTriangle, RefreshCw, Info
 } from 'lucide-react';
 import CarSelectorDropdown from '../components/CarSelectorDropdown';
 import { 
@@ -18,13 +19,27 @@ import {
 } from '../utils/timeline-event-extractor';
 import { 
   validateRaceDataStructure, 
-  checkFeatureAvailability 
+  checkFeatureAvailability,
+  detectEdgeCases,
+  getCarInfoSafely,
+  validateEventData
 } from '../utils/data-validation';
+import { 
+  useEnhancedMemo,
+  useDebouncedState,
+  useIntersectionObserver,
+  usePerformanceMonitor
+} from '../utils/performance-optimizations';
 import { TimelineEvent } from '../types/race-data';
 
 const RaceTimelineDashboard: React.FC = () => {
   const { raceData } = useData();
-  const [selectedCarNumber, setSelectedCarNumber] = useState<string | null>(null);
+  
+  // Phase 4: Performance monitoring
+  const renderCount = usePerformanceMonitor('RaceTimelineDashboard');
+  
+  // Phase 4: Debounced state for better performance
+  const [immediateCarNumber, debouncedCarNumber, setCarNumber] = useDebouncedState<string | null>(null);
   const [expandedEventIds, setExpandedEventIds] = useState<Set<string>>(new Set());
   
   // Phase 3: Configuration options for anomalous lap detection
@@ -32,53 +47,120 @@ const RaceTimelineDashboard: React.FC = () => {
   const [showAnomalousLaps, setShowAnomalousLaps] = useState(true);
   const [eventGrouping, setEventGrouping] = useState<'chronological' | 'by_type'>('chronological');
 
-  // Validate data and get available features
-  const dataValidation = useMemo(() => {
-    if (!raceData) return null;
-    return validateRaceDataStructure(raceData);
-  }, [raceData]);
+  // Phase 4: Enhanced state management
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processingError, setProcessingError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
-  const availableFeatures = useMemo(() => {
-    if (!raceData) return null;
-    return checkFeatureAvailability(raceData);
-  }, [raceData]);
+  // Use debounced value as the selected car number
+  const selectedCarNumber = debouncedCarNumber;
 
-  // Get timeline events for selected car - Phase 3 Enhanced
+  // Phase 4: Enhanced car selection with debouncing
+  const handleCarSelection = useCallback((carNumber: string | null) => {
+    setCarNumber(carNumber);
+    setProcessingError(null);
+  }, [setCarNumber]);
+
+  // Validate data and get available features - Phase 4: Enhanced memoization
+  const dataValidation = useEnhancedMemo(() => {
+    try {
+      if (!raceData) return null;
+      return validateRaceDataStructure(raceData);
+    } catch (error) {
+      console.error('Data validation error:', error);
+      setProcessingError('Failed to validate race data structure');
+      return null;
+    }
+  }, [raceData], { maxCacheSize: 5, expirationMs: 600000 });
+
+  const availableFeatures = useEnhancedMemo(() => {
+    try {
+      if (!raceData) return null;
+      return checkFeatureAvailability(raceData);
+    } catch (error) {
+      console.error('Feature availability check error:', error);
+      return null;
+    }
+  }, [raceData], { maxCacheSize: 5, expirationMs: 600000 });
+
+  // Phase 4: Edge case detection with caching
+  const edgeCases = useEnhancedMemo(() => {
+    try {
+      if (!raceData) return null;
+      return detectEdgeCases(raceData);
+    } catch (error) {
+      console.error('Edge case detection error:', error);
+      return null;
+    }
+  }, [raceData], { maxCacheSize: 5, expirationMs: 600000 });
+
+  // Get timeline events for selected car - Phase 3 Enhanced + Phase 4 Error Handling
   const timelineEvents = useMemo(() => {
-    if (!raceData || !selectedCarNumber) return [];
+    if (!raceData || !selectedCarNumber || isProcessing) return [];
     
-    // Gather all event types using Phase 1 extraction functions
-    const allEvents: TimelineEvent[] = [
-      ...extractRaceStartEvents(raceData).filter(e => e.carNumber === selectedCarNumber),
-      ...extractPitStopEvents(raceData).filter(e => e.carNumber === selectedCarNumber),
-      ...extractDriverChangeEvents(raceData).filter(e => e.carNumber === selectedCarNumber),
-      ...extractFastestLapEvents(raceData).filter(e => e.carNumber === selectedCarNumber),
-      ...extractFastestSectorEvents(raceData).filter(e => e.carNumber === selectedCarNumber),
-      ...(showAnomalousLaps ? extractAnomalousLapEvents(raceData, anomalousLapThreshold).filter(e => e.carNumber === selectedCarNumber) : [])
-    ];
+    try {
+      setIsProcessing(true);
+      setProcessingError(null);
 
-    // Sort and handle multiple events per lap
-    let sortedEvents = allEvents.sort((a, b) => {
-      // Primary sort: lap number
-      if (a.lap !== b.lap) return a.lap - b.lap;
-      
-      // Secondary sort: event priority for same lap
-      const eventPriority = {
-        'race_start': 1,
-        'pit_stop': 2,
-        'driver_change': 3,
-        'fastest_lap': 4,
-        'fastest_sector': 5,
-        'anomalous_lap': 6
-      };
-      
-      return (eventPriority[a.type] || 99) - (eventPriority[b.type] || 99);
-    });
+      // Phase 4: Validate car exists before processing
+      const carInfo = getCarInfoSafely(raceData, selectedCarNumber);
+      if (!carInfo) {
+        throw new Error(`Car ${selectedCarNumber} not found in race data`);
+      }
 
-    // Apply grouping based on user preference
-    if (eventGrouping === 'by_type') {
-      sortedEvents = allEvents.sort((a, b) => {
-        // Primary sort: event type
+      // Gather all event types using Phase 1 extraction functions with error handling
+      const allEvents: TimelineEvent[] = [];
+
+      try {
+        const raceStartEvents = extractRaceStartEvents(raceData).filter(e => e.carNumber === selectedCarNumber);
+        allEvents.push(...raceStartEvents);
+      } catch (error) {
+        console.warn('Error extracting race start events:', error);
+      }
+
+      try {
+        const pitStopEvents = extractPitStopEvents(raceData).filter(e => e.carNumber === selectedCarNumber);
+        allEvents.push(...pitStopEvents);
+      } catch (error) {
+        console.warn('Error extracting pit stop events:', error);
+      }
+
+      try {
+        const driverChangeEvents = extractDriverChangeEvents(raceData).filter(e => e.carNumber === selectedCarNumber);
+        allEvents.push(...driverChangeEvents);
+      } catch (error) {
+        console.warn('Error extracting driver change events:', error);
+      }
+
+      try {
+        const fastestLapEvents = extractFastestLapEvents(raceData).filter(e => e.carNumber === selectedCarNumber);
+        allEvents.push(...fastestLapEvents);
+      } catch (error) {
+        console.warn('Error extracting fastest lap events:', error);
+      }
+
+      try {
+        const fastestSectorEvents = extractFastestSectorEvents(raceData).filter(e => e.carNumber === selectedCarNumber);
+        allEvents.push(...fastestSectorEvents);
+      } catch (error) {
+        console.warn('Error extracting fastest sector events:', error);
+      }
+
+      try {
+        if (showAnomalousLaps) {
+          const anomalousLapEvents = extractAnomalousLapEvents(raceData, anomalousLapThreshold).filter(e => e.carNumber === selectedCarNumber);
+          allEvents.push(...anomalousLapEvents);
+        }
+      } catch (error) {
+        console.warn('Error extracting anomalous lap events:', error);
+      }
+
+      // Sort and handle multiple events per lap
+      let sortedEvents = allEvents.sort((a, b) => {
+        // Primary sort: lap number
+        if (a.lap !== b.lap) return a.lap - b.lap;
+        
+        // Secondary sort: event priority for same lap
         const eventPriority = {
           'race_start': 1,
           'pit_stop': 2,
@@ -88,33 +170,58 @@ const RaceTimelineDashboard: React.FC = () => {
           'anomalous_lap': 6
         };
         
-        const typeDiff = (eventPriority[a.type] || 99) - (eventPriority[b.type] || 99);
-        if (typeDiff !== 0) return typeDiff;
-        
-        // Secondary sort: lap number within same type
-        return a.lap - b.lap;
+        return (eventPriority[a.type] || 99) - (eventPriority[b.type] || 99);
       });
+
+      // Apply grouping based on user preference
+      if (eventGrouping === 'by_type') {
+        sortedEvents = allEvents.sort((a, b) => {
+          // Primary sort: event type
+          const eventPriority = {
+            'race_start': 1,
+            'pit_stop': 2,
+            'driver_change': 3,
+            'fastest_lap': 4,
+            'fastest_sector': 5,
+            'anomalous_lap': 6
+          };
+          
+          const typeDiff = (eventPriority[a.type] || 99) - (eventPriority[b.type] || 99);
+          if (typeDiff !== 0) return typeDiff;
+          
+          // Secondary sort: lap number within same type
+          return a.lap - b.lap;
+        });
+      }
+
+      // Group by lap if needed and add lap markers for multiple events
+      const processedEvents = sortedEvents.map((event, index) => {
+        const prevEvent = sortedEvents[index - 1];
+        const nextEvent = sortedEvents[index + 1];
+        
+        // Add grouping information for UI
+        return {
+          ...event,
+          isFirstInLap: !prevEvent || prevEvent.lap !== event.lap,
+          isLastInLap: !nextEvent || nextEvent.lap !== event.lap,
+          lapEventCount: sortedEvents.filter(e => e.lap === event.lap).length,
+          isFirstInType: eventGrouping === 'by_type' && (!prevEvent || prevEvent.type !== event.type),
+          isLastInType: eventGrouping === 'by_type' && (!nextEvent || nextEvent.type !== event.type),
+          typeEventCount: eventGrouping === 'by_type' ? sortedEvents.filter(e => e.type === event.type).length : 0
+        };
+      });
+
+      return processedEvents;
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error processing timeline events';
+      console.error('Timeline processing error:', error);
+      setProcessingError(errorMessage);
+      return [];
+    } finally {
+      setIsProcessing(false);
     }
-
-    // Group by lap if needed and add lap markers for multiple events
-    const processedEvents = sortedEvents.map((event, index) => {
-      const prevEvent = sortedEvents[index - 1];
-      const nextEvent = sortedEvents[index + 1];
-      
-      // Add grouping information for UI
-      return {
-        ...event,
-        isFirstInLap: !prevEvent || prevEvent.lap !== event.lap,
-        isLastInLap: !nextEvent || nextEvent.lap !== event.lap,
-        lapEventCount: sortedEvents.filter(e => e.lap === event.lap).length,
-        isFirstInType: eventGrouping === 'by_type' && (!prevEvent || prevEvent.type !== event.type),
-        isLastInType: eventGrouping === 'by_type' && (!nextEvent || nextEvent.type !== event.type),
-        typeEventCount: eventGrouping === 'by_type' ? sortedEvents.filter(e => e.type === event.type).length : 0
-      };
-    });
-
-    return processedEvents;
-  }, [raceData, selectedCarNumber, anomalousLapThreshold, showAnomalousLaps]);
+  }, [raceData, selectedCarNumber, anomalousLapThreshold, showAnomalousLaps, eventGrouping, isProcessing]);
 
   // Get selected car info
   const selectedCarInfo = useMemo(() => {
@@ -134,6 +241,17 @@ const RaceTimelineDashboard: React.FC = () => {
       return newSet;
     });
   };
+
+  // Phase 4: Retry mechanism for failed operations
+  const handleRetry = useCallback(() => {
+    setRetryCount(prev => prev + 1);
+    setProcessingError(null);
+    setIsProcessing(false);
+    // Force re-computation of timeline events by triggering the dependency
+    if (selectedCarNumber) {
+      setCarNumber(selectedCarNumber);
+    }
+  }, [selectedCarNumber, setCarNumber]);
 
   const getEventIcon = (type: string) => {
     switch (type) {
@@ -388,24 +506,50 @@ const RaceTimelineDashboard: React.FC = () => {
     );
   }
 
-  if (dataValidation && !dataValidation.isValid) {
+  // Phase 4: Enhanced data validation error handling
+  if (dataValidation && !dataValidation.canProceed) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center py-12">
-          <AlertCircle className="h-16 w-16 mx-auto mb-4 text-red-500" />
+          <AlertTriangle className="h-16 w-16 mx-auto mb-4 text-red-500" />
           <h3 className="text-xl font-semibold text-card-foreground mb-2">
-            Invalid Race Data
+            Data Validation Failed
           </h3>
           <p className="text-muted-foreground mb-4">
-            The race data format is not supported or contains errors.
+            The race data contains critical issues that prevent timeline display.
           </p>
-          <div className="text-sm text-muted-foreground">
-            <p>Data Format: {dataValidation.dataFormat}</p>
-            <p>Errors: {dataValidation.errors.length}</p>
+          <div className="text-sm text-muted-foreground space-y-2">
+            <p><strong>Data Quality:</strong> {dataValidation.dataQuality}</p>
+            <p><strong>Completeness:</strong> {dataValidation.completeness}%</p>
+            {dataValidation.errors.length > 0 && (
+              <div className="mt-4">
+                <p className="font-medium text-red-600 mb-2">Errors:</p>
+                <ul className="text-left max-w-md mx-auto space-y-1">
+                  {dataValidation.errors.map((error, index) => (
+                    <li key={index} className="text-sm text-red-600">• {error}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {dataValidation.fallbackOptions.length > 0 && (
+              <div className="mt-4">
+                <p className="font-medium text-blue-600 mb-2">Suggested Actions:</p>
+                <ul className="text-left max-w-md mx-auto space-y-1">
+                  {dataValidation.fallbackOptions.map((option, index) => (
+                    <li key={index} className="text-sm text-blue-600">• {option}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       </div>
     );
+  }
+
+  // Phase 4: Moderate data quality warning
+  if (dataValidation && dataValidation.severity === 'moderate' && dataValidation.warnings.length > 0) {
+    // Show warning but allow proceeding
   }
 
   return (
@@ -433,7 +577,7 @@ const RaceTimelineDashboard: React.FC = () => {
             <CarSelectorDropdown
               raceData={raceData}
               selectedCarNumber={selectedCarNumber}
-              onCarSelect={setSelectedCarNumber}
+              onCarSelect={handleCarSelection}
             />
           </div>
 
@@ -541,6 +685,70 @@ const RaceTimelineDashboard: React.FC = () => {
               {availableFeatures.anomalousLaps && <span>, <span className="text-orange-600">Anomalous Laps</span></span>}
             </div>
           )}
+
+          {/* Phase 4: Data Quality Warning */}
+          {dataValidation && dataValidation.severity === 'moderate' && (
+            <div className="flex items-start gap-3 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+              <AlertTriangle className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                  Data Quality Warning
+                </p>
+                <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
+                  Some features may be limited due to incomplete data ({dataValidation.completeness}% complete)
+                </p>
+                {dataValidation.warnings.length > 0 && (
+                  <ul className="text-xs text-yellow-600 dark:text-yellow-400 mt-2 space-y-1">
+                    {dataValidation.warnings.slice(0, 2).map((warning, index) => (
+                      <li key={index}>• {warning}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Phase 4: Edge Case Notifications */}
+          {edgeCases && edgeCases.hasIssues && edgeCases.issues.some(i => i.severity === 'critical' || i.severity === 'moderate') && (
+            <div className="flex items-start gap-3 p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
+              <Info className="h-5 w-5 text-orange-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-orange-800 dark:text-orange-200">
+                  Data Issues Detected
+                </p>
+                <p className="text-xs text-orange-700 dark:text-orange-300 mt-1">
+                  {edgeCases.issues.length} issue{edgeCases.issues.length !== 1 ? 's' : ''} found that may affect timeline display
+                </p>
+                {edgeCases.recommendations.length > 0 && (
+                  <p className="text-xs text-orange-600 dark:text-orange-400 mt-1">
+                    {edgeCases.recommendations[0]}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Phase 4: Processing Error Display */}
+          {processingError && (
+            <div className="flex items-start gap-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-red-800 dark:text-red-200">
+                  Processing Error
+                </p>
+                <p className="text-xs text-red-700 dark:text-red-300 mt-1">
+                  {processingError}
+                </p>
+              </div>
+              <button
+                onClick={handleRetry}
+                className="flex items-center gap-1 px-2 py-1 text-xs bg-red-100 dark:bg-red-800 text-red-700 dark:text-red-200 rounded hover:bg-red-200 dark:hover:bg-red-700 transition-colors"
+              >
+                <RefreshCw className="h-3 w-3" />
+                Retry
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -556,8 +764,24 @@ const RaceTimelineDashboard: React.FC = () => {
             fastest laps, driver changes, and anomalous laps.
           </p>
         </div>
+      ) : isProcessing ? (
+        <div className="text-center py-16">
+          <Loader2 className="h-12 w-12 mx-auto mb-6 text-primary animate-spin" />
+          <h3 className="text-xl font-semibold text-card-foreground mb-2">
+            Loading Timeline Events
+          </h3>
+          <p className="text-muted-foreground">
+            Processing race data for car #{selectedCarNumber}...
+          </p>
+        </div>
       ) : (
-        <div className="space-y-6">
+        <Suspense fallback={
+          <div className="text-center py-16">
+            <Loader2 className="h-12 w-12 mx-auto mb-6 text-primary animate-spin" />
+            <p className="text-muted-foreground">Loading timeline...</p>
+          </div>
+        }>
+          <div className="space-y-6">
           {/* Selected Car Info */}
           {selectedCarInfo && (
             <div className="bg-card border border-border rounded-xl p-6">
@@ -706,7 +930,8 @@ const RaceTimelineDashboard: React.FC = () => {
               })}
             </div>
           )}
-        </div>
+          </div>
+        </Suspense>
       )}
     </div>
   );
