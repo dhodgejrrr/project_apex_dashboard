@@ -11,6 +11,88 @@ export interface SectorTime {
   lap_number: number;
 }
 
+// Timeline Event Interfaces - Phase 1 Addition
+export interface TimelineEvent {
+  id: string;
+  lap: number;
+  type: 'race_start' | 'pit_stop' | 'driver_change' | 'fastest_lap' | 'fastest_sector' | 'anomalous_lap' | 'race_end';
+  carNumber: string;
+  driver: string;
+  team: string;
+  manufacturer?: string;
+  description: string;
+  time: string;
+  details?: any;
+  // Phase 3 additions for grouping
+  isFirstInLap?: boolean;
+  isLastInLap?: boolean;
+  lapEventCount?: number;
+  isFirstInType?: boolean;
+  isLastInType?: boolean;
+  typeEventCount?: number;
+}
+
+export interface RaceStartEvent {
+  car_number: string;
+  starting_driver: string;
+  team: string;
+  manufacturer: string;
+  grid_position: number;
+  starting_time: string;
+}
+
+export interface AnomalousLapData {
+  car_number: string;
+  driver_name: string;
+  lap_number: number;
+  lap_time: string;
+  median_time: string;
+  deviation_percentage: number;
+  suspected_cause: 'traffic' | 'mistake' | 'pace_drop' | 'overtaken' | 'unknown';
+  is_yellow_flag: boolean;
+}
+
+export interface YellowFlagData {
+  lap_number: number;
+  sector: number | null;
+  duration_laps: number;
+  affected_cars: string[];
+}
+
+export interface FastestSectorEvent {
+  car_number: string;
+  driver_name: string;
+  team: string;
+  manufacturer: string;
+  lap_number: number;
+  sector: 1 | 2 | 3;
+  sector_time: string;
+  stint_id?: string;
+}
+
+export interface CompleteRaceStartLineup {
+  cars: RaceStartEvent[];
+  race_start_time: string;
+  race_date: string;
+  circuit: string;
+}
+
+// Enhanced interfaces for better data structure support
+export interface EnhancedPitStopDetail extends PitStopDetail {
+  entry_time?: string;
+  exit_time?: string;
+  tire_compound_in?: string;
+  tire_compound_out?: string;
+  fuel_added?: number;
+  work_performed?: string[];
+}
+
+export interface EnhancedDriverChangeDetail extends DriverChangeDetail {
+  pit_stop_number?: number;
+  reason?: 'scheduled' | 'emergency' | 'strategy';
+  time_in_car_minutes?: number;
+}
+
 export interface FastestByCar {
   car_number: string;
   fastest_lap: FastestLapData;

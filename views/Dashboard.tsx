@@ -8,6 +8,7 @@ import StrategyDashboard from './StrategyDashboard';
 import DriverDashboard from './DriverDashboard';
 import InsightsDashboard from './InsightsDashboard';
 import AIAgentDashboard from './AIAgentDashboard';
+import RaceTimelineDashboard from './RaceTimelineDashboard';
 import ThemeToggle from '../components/ThemeToggle';
 
 const Dashboard: React.FC = () => {
@@ -24,10 +25,12 @@ const Dashboard: React.FC = () => {
         return <StrategyDashboard />;
       case 'driver':
         return <DriverDashboard />;
+      case 'race-timeline':
+        return <RaceTimelineDashboard />;
       case 'insights':
         return <InsightsDashboard />;
       case 'ai-agent':
-        return <AIAgentDashboard />;
+        return <AIAgentDashboard />; 
       default:
         return <OverviewDashboard onViewChange={setCurrentView} />;
     }

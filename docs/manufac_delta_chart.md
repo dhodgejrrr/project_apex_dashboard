@@ -1,0 +1,2 @@
+on the pace analysis page we want to add a new chart
+- using similar data to Fastest by Manufacturer, we want a chart that finds the fastest laps and average laps by EACH driver for a manufacture, then creates a box chart to visualize them. the box being the bounds of the upper and lower for the average lap time for the drivers in a given manufactures car, and the lines being the bounds of the FASTEST and SLOWEST lap of all the drivers BEST laps. 
